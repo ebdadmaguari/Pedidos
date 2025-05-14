@@ -13,7 +13,7 @@
       --primary-light: #4a7cc9;
       --primary-dark: #24437c;
       --border-color: #dee2e6;
-      --background: #f8f9fa;
+      --background: #000b16;
       --text-color: #333;
       --text-light: #6c757d;
       --row-blue: #e7efff;
@@ -45,9 +45,9 @@
 
     #form-container {
       width: 794px; /* largura ideal para caber em uma página A4 no PDF */
-      max-width: 794PX;
+      max-width: 794px;
       margin: 0 auto;
-      background: white;
+      background: rgb(255, 255, 255);
       padding: var(--space-3);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -422,7 +422,7 @@
    <div id="form-container">
     <div class="cabecalho">
       <div class="logo logo-esquerda">
-        <img src="Cópia de AEG - (080) (4).png" alt="Logo Igreja">
+        <img src="c:\Users\midia\Downloads\Cópia de AEG - (080) (4).png" alt="Logo Igreja">
       </div>
 
       <div class="texto-central">
@@ -435,7 +435,7 @@
       </div>
 
       <div class="logo logo-direita">
-        <img src="LOGO EBD.png" alt="Logo EBD">
+        <img src="c:\Users\midia\Downloads\LOGO EBD.png" alt="Logo EBD">
       </div>
     </div>
 
@@ -466,7 +466,7 @@
       <table>
         <thead>
           <tr>
-            <th rowspan="2">VALORES</th>
+            <th rowspan="2">VALOR UNITARIO</th>
             <th rowspan="2">MATERIAL</th>
             <th rowspan="2">ALUNO</th>
             <th rowspan="2">PROFESSOR</th>
@@ -674,6 +674,7 @@
   </div>
 </div>
 
+
     </div>
   </div>
 
@@ -690,7 +691,7 @@
 </div>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
   setupTrimester();
@@ -894,7 +895,7 @@ function verificarCaptchaResposta() {
 
 // 🔁 NOVA FUNÇÃO ATUALIZADA
 function generateAndSharePDF() {
-  // Impede execução até resolver o captcha
+   // Impede execução até resolver o captcha
   if (!continuarEnvio) {
     mostrarCaptchaPersonalizado();
     return;
