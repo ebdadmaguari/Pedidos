@@ -6,6 +6,7 @@
   <title>Pedido de Revistas - Escola Bíblica Dominical</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+   <link rel="icon" type="image/png" sizes="60x60" href="Cópia de AEG - (080) (11).png">
   <style>
     :root {
       --primary: #305aa3;
@@ -44,7 +45,7 @@
 
     #form-container {
       width: 794px; /* largura ideal para caber em uma página A4 no PDF */
-      max-width: 794px;
+      max-width: 794PX;
       margin: 0 auto;
       background: white;
       padding: var(--space-3);
@@ -74,14 +75,14 @@
     }
 
     .texto-central h1 {
-      font-size: 16px;
+      font-size: 12px;
       margin-bottom: var(--space-1);
       color: var(--primary-dark);
       font-weight: 700;
     }
 
     .texto-central p {
-      font-size: 12px;
+      font-size: 10px;
       color: var(--text-light);
       line-height: 1.3;
     }
@@ -92,8 +93,8 @@
     }
 
     .title-container h2 {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
       color: var(--primary-dark);
     }
 
@@ -113,16 +114,16 @@
 
     .form-group label {
       display: block;
-      font-weight: 600;
+      font-weight: 500;
       margin-bottom: var(--space-1);
-      font-size: 12px;
+      font-size: 9px;
       color: var(--primary-dark);
     }
 
     input[type="text"],
     input[type="tel"] {
       width: 100%;
-      padding: 6px 8px;
+      padding: 6px 6px;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       font-size: 12px;
@@ -138,7 +139,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 10px;
     }
 
     th, td {
@@ -151,7 +152,7 @@
       background-color: var(--primary);
       color: white;
       font-weight: 600;
-      font-size: 11px;
+      font-size: 9px;
       text-transform: uppercase;
     }
 
@@ -159,9 +160,9 @@
       background-color: var(--primary-dark);
       color: white;
       text-align: center;
-      font-weight: 600;
-      padding: 6px;
-      font-size: 12px;
+      font-weight: 500;
+      padding: 0.5px;
+      font-size: 10px;
     }
 
     .row-blue { background-color: var(--row-blue); }
@@ -169,9 +170,9 @@
     .row-green { background-color: var(--row-green); }
 
     .qty-input {
-      width: 50px;
+      width: 60px;
       text-align: center;
-      padding: 4px;
+      padding: 2px;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       font-size: 12px;
@@ -286,7 +287,7 @@
       }
 
       .title-container h2 {
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .form-header {
@@ -312,7 +313,7 @@
       }
 
       .category-header {
-        padding: 4px;
+        padding: 2PX;
         font-size: 10px;
       }
     }
@@ -408,12 +409,13 @@
       }
     }
     @media print {
-  .no-print {
-    display: none !important;
+  body, #form-container {
+    width: 700px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
   }
 }
-
-
   </style>
 </head>
 <body>
@@ -428,7 +430,7 @@
         <p>DEPARTAMENTO DA ESCOLA BÍBLICA DOMINICAL<br>
         CNPJ: 15.296.627/0001-09<br>
         Templo Central: Av. Cláudio Sanders, Nº 02, Maguari - ANANINDEUA-PA<br>
-        Pr. Presidente: WilTon Marques Vicente<br>
+        Pr. Presidente: Wilton Marques Vicente<br>
         Superintendente: Midian e Álvaro Rodrigues</p>
       </div>
 
@@ -677,6 +679,7 @@
   <button onclick="rejeitarCookies()" style="padding: 8px 16px;">Rejeitar</button>
 </div>
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -871,10 +874,16 @@ buttons.forEach(btn => btn.style.display = 'none');
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
-  // Reduz escala e ajusta largura para caber no A4
-  element.style.transform = "scale(0.8)";
-  element.style.transformOrigin = "top left";
-  element.style.width = "794px";
+// AJUSTES PARA A4 PERFEITO (SEM EXCESSO DE EXPANSÃO)
+  const a4Width = 794; // Valor ajustado entre 650-750px (experimente o melhor para seu layout)
+  const a4Height = 720; // Altura A4 em pixels (297mm)
+
+  // Aplicar estilos otimizados
+  element.style.width = `${a4Width}px`;
+  element.style.padding = '10px'; // Padding controlado
+  element.style.margin = '0 auto'; // Centralizado
+  element.style.transform = 'none'; // Remove qualquer scale anterior
+  element.style.boxSizing = 'border-box';
 
   const opt = {
     margin: 0,
@@ -905,7 +914,6 @@ buttons.forEach(btn => btn.style.display = 'none');
       `*Coordenador:* ${coordinator}\n` +
       `*Telefone:* ${phone}\n` +
       `*Trimestre:* ${trimester} Trimestre ${year}\n` +
-      `*Total:* ${total}\n\n` +
       `Pedido completo em anexo.`;
 
     const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
