@@ -252,7 +252,6 @@ function showCaptcha() {
   document.getElementById('captcha-modal').style.display = 'flex';
 }
 
-// Modifique sua função generateAndSharePDF para usar o CAPTCHA e html2canvas
 function generateAndSharePDF() {
   showCaptcha();
 
@@ -272,62 +271,60 @@ function generateAndSharePDF() {
 
     toggleLoading(true);
 
-    const tabela = document.querySelector("#tabela");
+    // Espera a renderização total do DOM
+    setTimeout(() => {
+      const tabela = document.querySelector("#tabela");
 
-    html2canvas(tabela, {
-      scale: 2,
-      useCORS: true
-    }).then(canvas => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pageWidth - 20;
-      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-      
-      let y = 10;
-      if (imgHeight > pageHeight - 20) {
-        pdf.addImage(imgData, 'PNG', 10, y, imgWidth, pageHeight - 20);
-      } else {
-        pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
-      }
+      html2canvas(tabela, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff" // Garante fundo branco
+      }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
 
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
-      const filename = `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`;
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const imgWidth = pdfWidth - 20;
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-      const congregation = document.getElementById('congregation').value || 'Não informado';
-      const coordinator = document.getElementById('coordinator').value || 'Não informado';
-      const phone = document.getElementById('phone').value || 'Não informado';
+        let y = 10;
+        pdf.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
 
-      const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
-        `*Congregação:* ${congregation}\n` +
-        `*Coordenador:* ${coordinator}\n` +
-        `*Telefone:* ${phone}\n` +
-        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
-        `Pedido completo em anexo.`;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+        const filename = `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`;
 
-      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
+        const congregation = document.getElementById('congregation').value || 'Não informado';
+        const coordinator = document.getElementById('coordinator').value || 'Não informado';
+        const phone = document.getElementById('phone').value || 'Não informado';
 
-      pdf.save(filename);
+        const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
+          `*Congregação:* ${congregation}\n` +
+          `*Coordenador:* ${coordinator}\n` +
+          `*Telefone:* ${phone}\n` +
+          `*Trimestre:* ${trimester} Trimestre ${year}\n` +
+          `Pedido completo em anexo.`;
 
-      toggleLoading(false);
+        const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
-      setTimeout(() => {
-        window.open(whatsappUrl, '_blank');
+        pdf.save(filename);
+
+        toggleLoading(false);
         buttons.forEach(btn => btn.style.display = '');
-      }, 1000);
-    }).catch(err => {
-      console.error('Erro ao gerar PDF:', err);
-      toggleLoading(false);
-      buttons.forEach(btn => btn.style.display = '');
-      showToast('Erro ao gerar PDF. Por favor, tente novamente.');
-    });
+
+        setTimeout(() => {
+          window.open(whatsappUrl, "_blank");
+        }, 500);
+      }).catch(err => {
+        console.error("Erro ao gerar PDF:", err);
+        toggleLoading(false);
+        buttons.forEach(btn => btn.style.display = '');
+        showToast("Erro ao gerar PDF. Por favor, tente novamente.");
+      });
+    }, 300); // Pequeno delay garante renderização
   };
 }
 
