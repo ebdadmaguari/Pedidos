@@ -326,6 +326,8 @@
  
 
 .assinaturas {
+  padding-top: 15px;
+  padding-bottom: -10px;
   text-align: center;
   font-size: 11px; /* menor fonte */
 }
