@@ -252,7 +252,7 @@ function showCaptcha() {
   document.getElementById('captcha-modal').style.display = 'flex';
 }
 
-// Modifique sua função generateAndSharePDF para usar o CAPTCHA
+// Modifique sua função generateAndSharePDF para usar o CAPTCHA e html2canvas
 function generateAndSharePDF() {
   showCaptcha();
 
@@ -272,44 +272,38 @@ function generateAndSharePDF() {
 
     toggleLoading(true);
 
-    const element = document.getElementById('form-container');
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+    const tabela = document.querySelector("#tabela");
 
-    const a4Width = 794;
-    const a4Height = 794;
-
-    element.style.width = `${a4Width}px`;
-    element.style.padding = '10px';
-    element.style.margin = '0 auto';
-    
-    element.style.boxSizing = 'border-box';
-
-    const opt = {
-      margin: 0,
-      filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        letterRendering: true
-      },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
-        orientation: 'portrait' 
+    html2canvas(tabela, {
+      scale: 2,
+      useCORS: true
+    }).then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+      
+      let y = 10;
+      if (imgHeight > pageHeight - 20) {
+        pdf.addImage(imgData, 'PNG', 10, y, imgWidth, pageHeight - 20);
+      } else {
+        pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
       }
-    };
 
-    const congregation = document.getElementById('congregation').value || 'Não informado';
-    const coordinator = document.getElementById('coordinator').value || 'Não informado';
-    const phone = document.getElementById('phone').value || 'Não informado';
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+      const filename = `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`;
 
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-      const pdfBlob = pdf.output('blob');
-      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const congregation = document.getElementById('congregation').value || 'Não informado';
+      const coordinator = document.getElementById('coordinator').value || 'Não informado';
+      const phone = document.getElementById('phone').value || 'Não informado';
 
       const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
         `*Congregação:* ${congregation}\n` +
@@ -320,20 +314,12 @@ function generateAndSharePDF() {
 
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
-      const a = document.createElement('a');
-      a.href = pdfUrl;
-      a.download = opt.filename;
-      document.body.appendChild(a);
-      a.click();
+      pdf.save(filename);
 
       toggleLoading(false);
 
       setTimeout(() => {
         window.open(whatsappUrl, '_blank');
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pdfUrl);
-        element.style.transform = "";
-        element.style.transformOrigin = "";
         buttons.forEach(btn => btn.style.display = '');
       }, 1000);
     }).catch(err => {
@@ -344,6 +330,7 @@ function generateAndSharePDF() {
     });
   };
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
   setupTrimester();
