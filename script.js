@@ -188,6 +188,12 @@ function mostrarCaptchaPersonalizado() {
 
 // Valida a resposta
 function verificarCaptchaResposta() {
+  inputEl.focus();
+inputEl.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    verificarCaptchaResposta();
+  }
+});
   const resposta = parseInt(document.getElementById('captcha-answer').value);
   if (resposta === captchaCorreto) {
     document.getElementById('captcha-modal').style.display = 'none';
