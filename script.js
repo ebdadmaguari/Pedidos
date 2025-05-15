@@ -264,149 +264,183 @@ function toggleLoading(show) {
   }
 }
 
-function mostrarCaptchaSelecao() {
-  const opcoes = [
-    { texto: "Cachorro", correta: false },
-    { texto: "Gato", correta: false },
-    { texto: "Robô", correta: true }
-  ];
+// Variável para armazenar o código CAPTCHA atual
+//let currentCaptchaCode = '';
 
-  opcoes.sort(() => 0.5 - Math.random());
-
-  const container = document.getElementById('captcha-options');
-  container.innerHTML = '';
-  container.dataset.respostaCorreta = '';
-
-  opcoes.forEach(opcao => {
-    const btn = document.createElement('button');
-    btn.textContent = opcao.texto;
-    btn.style.padding = '10px 20px';
-    btn.style.margin = '0 10px';
-    btn.style.cursor = 'pointer';
-    btn.style.border = '1px solid #ccc';
-    btn.style.borderRadius = '5px';
-    btn.style.backgroundColor = '#f0f0f0';
-
-    btn.onclick = function() {
-      document.querySelectorAll('#captcha-options button').forEach(b => b.style.backgroundColor = '#f0f0f0');
-      btn.style.backgroundColor = '#a5d6a7';
-      container.dataset.respostaCorreta = opcao.correta;
-    };
-
-    container.appendChild(btn);
+// Inicializa o CAPTCHA
+function initCaptcha() {
+  // Event listeners
+  document.getElementById('not-robot-checkbox').addEventListener('change', function() {
+    if (this.checked) {
+      generateCaptchaCode();
+      document.getElementById('captcha-code-container').style.display = 'block';
+    } else {
+      document.getElementById('captcha-code-container').style.display = 'none';
+    }
   });
 
+  document.getElementById('refresh-captcha').addEventListener('click', generateCaptchaCode);
+  document.getElementById('verify-captcha').addEventListener('click', verifyCaptcha);
+}
+
+// Gera um novo código CAPTCHA
+function generateCaptchaCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  let code = '';
+
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  currentCaptchaCode = code;
+  document.getElementById('captcha-code').textContent = code;
+  document.getElementById('captcha-input').value = '';
+  document.getElementById('captcha-error').textContent = '';
+}
+
+// Verifica o CAPTCHA
+function verifyCaptcha() {
+  const checkbox = document.getElementById('not-robot-checkbox');
+  const errorEl = document.getElementById('captcha-error');
+
+  if (!checkbox.checked) {
+    errorEl.textContent = 'Por favor, marque a caixa de verificação.';
+    return false;
+  }
+
+  const userInput = document.getElementById('captcha-input').value.trim();
+
+  if (userInput === '') {
+    errorEl.textContent = 'Por favor, digite o código de verificação.';
+    return false;
+  }
+
+  if (userInput !== currentCaptchaCode) {
+    errorEl.textContent = 'Código incorreto. Tente novamente.';
+    generateCaptchaCode();
+    return false;
+  }
+
+  // CAPTCHA verificado com sucesso
+  document.getElementById('captcha-modal').style.display = 'none';
+  window.onCaptchaSuccess();
+  return true;
+}
+
+// Mostra o CAPTCHA
+function showCaptcha() {
+  document.getElementById('not-robot-checkbox').checked = false;
+  document.getElementById('captcha-code-container').style.display = 'none';
+  document.getElementById('captcha-error').textContent = '';
   document.getElementById('captcha-modal').style.display = 'flex';
 }
 
-function verificarCaptchaSelecao() {
-  const container = document.getElementById('captcha-options');
-  const correta = container.dataset.respostaCorreta === "true";
-
-  if (correta) {
-    document.getElementById('captcha-modal').style.display = 'none';
-    captchaResolvido = true;
-    generateAndSharePDF();
-  } else {
-    showToast('Selecione a imagem correta.');
-  }
-}
-
+// Modifique sua função generateAndSharePDF para usar o CAPTCHA
 function generateAndSharePDF() {
-  if (!captchaResolvido) {
-    // Mostra o CAPTCHA tradicional
-    showCaptcha();
-    // Define a função de callback para quando o CAPTCHA for resolvido
-    window.onCaptchaSuccess = function() {
-      captchaResolvido = true;
-      generateAndSharePDF();
-    };
-    return;
-  }
-  
-  captchaResolvido = false;
-  calculateSubtotals();
-  
-  const buttons = document.querySelectorAll('.no-print');
-  buttons.forEach(btn => btn.style.display = 'none');
+  showCaptcha();
 
-  const total = document.getElementById('total').textContent;
-  if (total === 'R$ 0,00') {
-    showToast('Adicione pelo menos um item ao pedido!');
-    buttons.forEach(btn => btn.style.display = '');
-    return;
-  }
+  window.onCaptchaSuccess = function() {
+    captchaResolvido = false;
+    calculateSubtotals();
 
-  toggleLoading(true);
+    const buttons = document.querySelectorAll('.no-print');
+    buttons.forEach(btn => btn.style.display = 'none');
 
-  const element = document.getElementById('form-container');
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
-
-  const a4Width = 794;
-  const a4Height = 1123;
-
-  element.style.width = `${a4Width}px`;
-  element.style.padding = '10px';
-  element.style.margin = '0 auto';
-  element.style.transform = 'none';
-  element.style.boxSizing = 'border-box';
-
-  const opt = {
-    margin: 0,
-    filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { 
-      scale: 2,
-      useCORS: true,
-      letterRendering: true
-    },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'portrait' 
-    }
-  };
-
-  const congregation = document.getElementById('congregation').value || 'Não informado';
-  const coordinator = document.getElementById('coordinator').value || 'Não informado';
-  const phone = document.getElementById('phone').value || 'Não informado';
-
-  html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-    const pdfBlob = pdf.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-
-    const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
-      `*Congregação:* ${congregation}\n` +
-      `*Coordenador:* ${coordinator}\n` +
-      `*Telefone:* ${phone}\n` +
-      `*Trimestre:* ${trimester} Trimestre ${year}\n` +
-      `Pedido completo em anexo.`;
-
-    const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
-
-    const a = document.createElement('a');
-    a.href = pdfUrl;
-    a.download = opt.filename;
-    document.body.appendChild(a);
-    a.click();
-
-    toggleLoading(false);
-
-    setTimeout(() => {
-      window.open(whatsappUrl, '_blank');
-      document.body.removeChild(a);
-      URL.revokeObjectURL(pdfUrl);
-      element.style.transform = "";
-      element.style.transformOrigin = "";
+    const total = document.getElementById('total').textContent;
+    if (total === 'R$ 0,00') {
+      showToast('Adicione pelo menos um item ao pedido!');
       buttons.forEach(btn => btn.style.display = '');
-    }, 1000);
-  }).catch(err => {
-    console.error('Erro ao gerar PDF:', err);
-    toggleLoading(false);
-    buttons.forEach(btn => btn.style.display = '');
-    showToast('Erro ao gerar PDF. Por favor, tente novamente.');
-  });
+      return;
+    }
+
+    toggleLoading(true);
+
+    const element = document.getElementById('form-container');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+
+    const a4Width = 794;
+    const a4Height = 1123;
+
+    element.style.width = `${a4Width}px`;
+    element.style.padding = '10px';
+    element.style.margin = '0 auto';
+    element.style.transform = 'none';
+    element.style.boxSizing = 'border-box';
+
+    const opt = {
+      margin: 0,
+      filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait' 
+      }
+    };
+
+    const congregation = document.getElementById('congregation').value || 'Não informado';
+    const coordinator = document.getElementById('coordinator').value || 'Não informado';
+    const phone = document.getElementById('phone').value || 'Não informado';
+
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
+        `*Congregação:* ${congregation}\n` +
+        `*Coordenador:* ${coordinator}\n` +
+        `*Telefone:* ${phone}\n` +
+        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
+        `Pedido completo em anexo.`;
+
+      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
+
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = opt.filename;
+      document.body.appendChild(a);
+      a.click();
+
+      toggleLoading(false);
+
+      setTimeout(() => {
+        window.open(whatsappUrl, '_blank');
+        document.body.removeChild(a);
+        URL.revokeObjectURL(pdfUrl);
+        element.style.transform = "";
+        element.style.transformOrigin = "";
+        buttons.forEach(btn => btn.style.display = '');
+      }, 1000);
+    }).catch(err => {
+      console.error('Erro ao gerar PDF:', err);
+      toggleLoading(false);
+      buttons.forEach(btn => btn.style.display = '');
+      showToast('Erro ao gerar PDF. Por favor, tente novamente.');
+    });
+  };
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  setupTrimester();
+  setupQuantityInputs();
+  setupPhoneFormatting();
+  initCaptcha();
+
+  const btnEnviar = document.getElementById('btn-enviar');
+  if (btnEnviar) {
+    btnEnviar.addEventListener('click', generateAndSharePDF);
+  }
+
+  const btnVerificarCaptcha = document.getElementById('btn-verificar-captcha');
+  if (btnVerificarCaptcha) {
+    btnVerificarCaptcha.addEventListener('click', verificarCaptchaSelecao);
+  }
+});
