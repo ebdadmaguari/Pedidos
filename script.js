@@ -171,33 +171,7 @@ let captchaCorreto = null;
 let continuarEnvio = false;
 
 // Gera uma pergunta aleatória de matemática simples
-function mostrarCaptchaPersonalizado() {
-  const modal = document.getElementById('captcha-modal');
-  const perguntaEl = document.getElementById('captcha-question');
-  const inputEl = document.getElementById('captcha-answer');
 
-  const num1 = Math.floor(Math.random() * 10) + 1;
-  const num2 = Math.floor(Math.random() * 10) + 1;
-
-  captchaCorreto = num1 + num2;
-  perguntaEl.textContent = `Quanto é ${num1} + ${num2}?`;
-  inputEl.value = '';
-
-  modal.style.display = 'flex';
-}
-
-// Valida a resposta
-function verificarCaptchaResposta() {
-    
-  const resposta = parseInt(document.getElementById('captcha-answer').value);
-  if (resposta === captchaCorreto) {
-    document.getElementById('captcha-modal').style.display = 'none';
-    continuarEnvio = true;
-    generateAndSharePDF(); // Chama a função original novamente após passar no captcha
-  } else {
-    showToast('Resposta incorreta. Tente novamente.');
-  }
-}
 
 // 🔁 NOVA FUNÇÃO ATUALIZADA
 function generateAndSharePDF() {
