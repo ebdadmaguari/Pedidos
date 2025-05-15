@@ -284,7 +284,7 @@ function generateAndSharePDF() {
     element.style.width = `${a4Width}px`;
     element.style.padding = '10px';
     element.style.margin = '0 auto';
-    element.style.transform = 'none';
+    
     element.style.boxSizing = 'border-box';
 
     const opt = {
