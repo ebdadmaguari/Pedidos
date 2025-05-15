@@ -106,7 +106,7 @@
       display: block;
       font-weight: 500;
       margin-bottom: var(--space-1);
-      font-size: 9px;
+      font-size: 11px;
       color: var(--primary-dark);
     }
 
@@ -129,7 +129,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 10px;
+      font-size: 11px;
     }
 
     th, td {
@@ -142,7 +142,7 @@
       background-color: var(--primary);
       color: white;
       font-weight: 600;
-      font-size: 9px;
+      font-size: 11px;
       text-transform: uppercase;
     }
 
@@ -152,7 +152,7 @@
       text-align: center;
       font-weight: 500;
       padding: 0.5px;
-      font-size: 10px;
+      font-size: 11px;
     }
 
     .row-blue { background-color: var(--row-blue); }
@@ -286,7 +286,7 @@
       }
 
       table {
-        font-size: 9px;
+        font-size: 11px;
       }
 
       th, td {
