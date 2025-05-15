@@ -170,56 +170,33 @@ function toggleLoading(show) {
 let captchaCorreto = null;
 let continuarEnvio = false;
 
-function mostrarCaptchaSelecao() {
-  const opcoes = [
-    { texto: "Cachorro", correta: false },
-    { texto: "Gato", correta: false },
-    { texto: "Robô", correta: true } // Essa é a correta
-  ];
+// Gera uma pergunta aleatória de matemática simples
+function mostrarCaptchaPersonalizado() {
+  const modal = document.getElementById('captcha-modal');
+  const perguntaEl = document.getElementById('captcha-question');
+  const inputEl = document.getElementById('captcha-answer');
 
-  // Embaralha as opções
-  opcoes.sort(() => 0.5 - Math.random());
+  const num1 = Math.floor(Math.random() * 10) + 1;
+  const num2 = Math.floor(Math.random() * 10) + 1;
 
-  const container = document.getElementById('captcha-options');
-  container.innerHTML = '';
-  container.dataset.respostaCorreta = '';
+  captchaCorreto = num1 + num2;
+  perguntaEl.textContent = `Quanto é ${num1} + ${num2}?`;
+  inputEl.value = '';
 
-  opcoes.forEach(opcao => {
-    const btn = document.createElement('button');
-    btn.textContent = opcao.texto;
-    btn.style.padding = '10px 20px';
-    btn.style.margin = '0 10px';
-    btn.style.cursor = 'pointer';
-    btn.style.border = '1px solid #ccc';
-    btn.style.borderRadius = '5px';
-    btn.style.backgroundColor = '#f0f0f0';
-
-    btn.onclick = function () {
-      document.querySelectorAll('#captcha-options button').forEach(b => b.style.backgroundColor = '#f0f0f0');
-      btn.style.backgroundColor = '#a5d6a7';
-      container.dataset.respostaCorreta = opcao.correta;
-    };
-
-    container.appendChild(btn);
-  });
-
-  document.getElementById('captcha-modal').style.display = 'flex';
+  modal.style.display = 'flex';
 }
 
-
-function verificarCaptchaSelecao() {
-  const container = document.getElementById('captcha-options');
-  const correta = container.dataset.respostaCorreta === "true";
-
-  if (correta) {
+// Valida a resposta
+function verificarCaptchaResposta() {
+  const resposta = parseInt(document.getElementById('captcha-answer').value);
+  if (resposta === captchaCorreto) {
     document.getElementById('captcha-modal').style.display = 'none';
     continuarEnvio = true;
-    generateAndSharePDF();
+    generateAndSharePDF(); // Chama a função original novamente após passar no captcha
   } else {
-    showToast('Selecione a imagem correta.');
+    showToast('Resposta incorreta. Tente novamente.');
   }
 }
-
 
 // 🔁 NOVA FUNÇÃO ATUALIZADA
 function generateAndSharePDF() {
@@ -253,7 +230,7 @@ buttons.forEach(btn => btn.style.display = 'none');
 
 // AJUSTES PARA A4 PERFEITO (SEM EXCESSO DE EXPANSÃO)
   const a4Width = 794; // Valor ajustado entre 650-750px (experimente o melhor para seu layout)
-  const a4Height = 794; // Altura A4 em pixels (297mm)
+  const a4Height = 720; // Altura A4 em pixels (297mm)
 
   // Aplicar estilos otimizados
   element.style.width = `${a4Width}px`;
