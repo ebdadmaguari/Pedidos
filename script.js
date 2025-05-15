@@ -49,7 +49,7 @@ function setupTrimester() {
   const year = now.getFullYear();
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
-  document.getElementById('trimester').textContent = `${trimester} TRIMESTRE ${year}`;
+  document.getElementById('trimester').textContent = ${trimester} TRIMESTRE ${year};
 }
 
 function setupQuantityInputs() {
@@ -70,10 +70,10 @@ function setupPhoneFormatting() {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length <= 11) {
       if (value.length > 2) {
-        value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+        value = (${value.substring(0, 2)}) ${value.substring(2)};
       }
       if (value.length > 10) {
-        value = `${value.substring(0, 10)}-${value.substring(10)}`;
+        value = ${value.substring(0, 10)}-${value.substring(10)};
       }
       e.target.value = value;
     }
@@ -142,7 +142,7 @@ function resetForm() {
 
 function calculateTotal() {
   const total = calculateSubtotals();
-  showToast(`Total calculado: ${formatCurrency(total)}`);
+  showToast(Total calculado: ${formatCurrency(total)});
 }
 
 function showToast(message) {
@@ -281,16 +281,15 @@ function generateAndSharePDF() {
     const a4Width = 794;
     const a4Height = 794;
 
-    element.style.width = `${a4Width}px`;
+    element.style.width = ${a4Width}px;
     element.style.padding = '10px';
     element.style.margin = '0 auto';
     element.style.transform = 'scale(1)';
-
     element.style.boxSizing = 'border-box';
 
     const opt = {
       margin: 0,
-      filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
+      filename: Pedido_Revistas_${trimester}_Trimestre_${year}.pdf,
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { 
         scale: 2,
@@ -312,14 +311,14 @@ function generateAndSharePDF() {
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
-        `*Congregação:* ${congregation}\n` +
-        `*Coordenador:* ${coordinator}\n` +
-        `*Telefone:* ${phone}\n` +
-        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
-        `Pedido completo em anexo.`;
+      const message = *PEDIDO DE REVISTAS - EBD*\n\n +
+        *Congregação:* ${congregation}\n +
+        *Coordenador:* ${coordinator}\n +
+        *Telefone:* ${phone}\n +
+        *Trimestre:* ${trimester} Trimestre ${year}\n +
+        Pedido completo em anexo.;
 
-      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
+      const whatsappUrl = https://wa.me/5591981918866?text=${encodeURIComponent(message)};
 
       const a = document.createElement('a');
       a.href = pdfUrl;
