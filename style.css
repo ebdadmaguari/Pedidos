@@ -1,0 +1,408 @@
+:root {
+      --primary: #305aa3;
+      --primary-light: #4a7cc9;
+      --primary-dark: #24437c;
+      --border-color: #dee2e6;
+      --background: #000b16;
+      --text-color: #333;
+      --text-light: #6c757d;
+      --row-blue: #e7efff;
+      --row-orange: #fff4ec;
+      --row-green: #edf7ef;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 16px;
+      --space-4: 24px;
+      --space-5: 32px;
+      --transition: all 0.2s ease-in-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background: var(--background);
+      color: var(--text-color);
+      line-height: 1.4;
+      padding: var(--space-2);
+    }
+
+    #form-container {
+      width: 794px; /* largura ideal para caber em uma página A4 no PDF */
+      max-width: 794px;
+      margin: 0 auto;
+      background: rgb(255, 255, 255);
+      padding: var(--space-3);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .cabecalho {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .logo img {
+      max-width: 100px;
+      height: auto;
+      border-radius: var(--radius);
+      object-fit: contain;
+    }
+
+    .texto-central {
+      flex: 1;
+      text-align: center;
+    }
+
+    .texto-central h1 {
+      font-size: 12px;
+      margin-bottom: var(--space-1);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .texto-central p {
+      font-size: 10px;
+      color: var(--text-light);
+      line-height: 1.3;
+    }
+
+    .title-container {
+      text-align: center;
+      margin: var(--space-3) 0;
+    }
+
+    .title-container h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .form-header {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+      background-color: #f5f8ff;
+      padding: var(--space-2);
+      border-radius: var(--radius);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-2);
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: var(--space-1);
+      font-size: 9px;
+      color: var(--primary-dark);
+    }
+
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 6px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 12px;
+    }
+
+    .tabela-scroll {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: var(--space-3);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    .category-header {
+      background-color: var(--primary-dark);
+      color: white;
+      text-align: center;
+      font-weight: 500;
+      padding: 0.5px;
+      font-size: 10px;
+    }
+
+    .row-blue { background-color: var(--row-blue); }
+    .row-orange { background-color: var(--row-orange); }
+    .row-green { background-color: var(--row-green); }
+
+    .qty-input {
+      width: 60px;
+      text-align: center;
+      padding: 2px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 12px;
+    }
+
+    .subtotal {
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .btn i {
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-outline {
+      border: 2px solid var(--primary);
+      background-color: white;
+      color: var(--primary);
+    }
+
+    .btn-whatsapp {
+      background-color: #25D366;
+      color: white;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s;
+    }
+
+    .loading-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--primary-light);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        font-size: 10px;
+      }
+
+      #form-container {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .cabecalho {
+        margin-bottom: var(--space-2);
+      }
+
+      .logo img {
+        max-width: 80px;
+      }
+
+      .texto-central h1 {
+        font-size: 14px;
+      }
+
+      .texto-central p {
+        font-size: 10px;
+      }
+
+      .title-container h2 {
+        font-size: 12px;
+      }
+
+      .form-header {
+        padding: var(--space-1);
+        margin-bottom: var(--space-2);
+      }
+
+      table {
+        font-size: 9px;
+      }
+
+      th, td {
+        padding: 4px 6px;
+      }
+
+      .qty-input {
+        width: 40px;
+        padding: 2px;
+      }
+
+      .action-buttons {
+        display: none;
+      }
+
+      .category-header {
+        padding: 2PX;
+        font-size: 10px;
+      }
+    }
+    #cookie-banner {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #222;
+    color: #fff;
+    padding: 20px;
+    z-index: 9999;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    font-family: 'Segoe UI', sans-serif;
+    transition: transform 0.3s ease;
+  }
+
+  #cookie-banner.show {
+    display: block;
+    transform: translateY(0);
+  }
+
+  #cookie-banner p {
+    margin: 0;
+    padding: 0 0 10px 0;
+    font-size: 16px;
+  }
+
+  #cookie-banner a {
+    color: #4ecdc4;
+    text-decoration: underline;
+  }
+
+  #cookie-banner button {
+    margin: 0 5px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  #cookie-banner button:first-of-type {
+    background-color: #4ecdc4;
+    color: #000;
+  }
+
+  #cookie-banner button:first-of-type:hover {
+    background-color: #38bdb2;
+  }
+
+  #cookie-banner button:last-of-type {
+    background-color: #666;
+    color: #fff;
+  }
+
+  #cookie-banner button:last-of-type:hover {
+    background-color: #555;
+  }
+
+  @media (max-width: 600px) {
+    #cookie-banner {
+      padding: 15px;
+      font-size: 14px;
+    }
+
+    #cookie-banner button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+    }
+  }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .cabecalho {
+        flex-direction: column;
+      }
+
+      .form-header {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+    @media print {
+  body, #form-container {
+    width: 700px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+}
