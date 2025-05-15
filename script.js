@@ -2,13 +2,110 @@ document.addEventListener('DOMContentLoaded', function() {
   setupTrimester();
   setupQuantityInputs();
   setupPhoneFormatting();
+  initCaptcha();
+  
+  // Vincula os eventos dos botões
+  const btnEnviar = document.getElementById('btn-enviar');
+  if (btnEnviar) {
+    btnEnviar.addEventListener('click', generateAndSharePDF);
+  }
+  
+  const btnVerificarCaptcha = document.getElementById('btn-verificar-captcha');
+  if (btnVerificarCaptcha) {
+    btnVerificarCaptcha.addEventListener('click', verificarCaptchaSelecao);
+  }
 });
+
+// Variável para armazenar o código CAPTCHA atual
+let currentCaptchaCode = '';
+let captchaResolvido = false;
+
+// Inicializa o CAPTCHA
+function initCaptcha() {
+  // Event listeners para o CAPTCHA tradicional
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  if (robotCheckbox) {
+    robotCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        generateCaptchaCode();
+        document.getElementById('captcha-code-container').style.display = 'block';
+      } else {
+        document.getElementById('captcha-code-container').style.display = 'none';
+      }
+    });
+  }
+  
+  const refreshCaptcha = document.getElementById('refresh-captcha');
+  if (refreshCaptcha) {
+    refreshCaptcha.addEventListener('click', generateCaptchaCode);
+  }
+  
+  const verifyCaptcha = document.getElementById('verify-captcha');
+  if (verifyCaptcha) {
+    verifyCaptcha.addEventListener('click', verifyCaptcha);
+  }
+}
+
+// Gera um novo código CAPTCHA
+function generateCaptchaCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  let code = '';
+  
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  currentCaptchaCode = code;
+  document.getElementById('captcha-code').textContent = code;
+  document.getElementById('captcha-input').value = '';
+  document.getElementById('captcha-error').textContent = '';
+}
+
+// Verifica o CAPTCHA tradicional
+function verifyCaptcha() {
+  const checkbox = document.getElementById('not-robot-checkbox');
+  const errorEl = document.getElementById('captcha-error');
+  
+  if (!checkbox.checked) {
+    errorEl.textContent = 'Por favor, marque a caixa de verificação.';
+    return false;
+  }
+  
+  const userInput = document.getElementById('captcha-input').value.trim();
+  
+  if (userInput === '') {
+    errorEl.textContent = 'Por favor, digite o código de verificação.';
+    return false;
+  }
+  
+  if (userInput !== currentCaptchaCode) {
+    errorEl.textContent = 'Código incorreto. Tente novamente.';
+    generateCaptchaCode();
+    return false;
+  }
+  
+  // CAPTCHA verificado com sucesso
+  document.getElementById('captcha-modal').style.display = 'none';
+  captchaResolvido = true;
+  if (typeof window.onCaptchaSuccess === 'function') {
+    window.onCaptchaSuccess();
+  }
+  return true;
+}
+
+// Mostra o CAPTCHA
+function showCaptcha() {
+  document.getElementById('not-robot-checkbox').checked = false;
+  document.getElementById('captcha-code-container').style.display = 'none';
+  document.getElementById('captcha-error').textContent = '';
+  document.getElementById('captcha-modal').style.display = 'flex';
+}
+
 // Função para verificar o consentimento
 function verificarConsentimentoCookies() {
   const consentimento = localStorage.getItem("cookieConsent");
 
   if (!consentimento) {
-    // Mostra o banner se ainda não houver consentimento
     document.getElementById("cookie-banner").style.display = "block";
   }
 }
@@ -18,7 +115,6 @@ function aceitarCookies() {
   localStorage.setItem("cookieConsent", "aceito");
   document.getElementById("cookie-banner").style.display = "none";
   console.log("Cookies aceitos.");
-  // Aqui você pode ativar scripts do Google Analytics, Facebook Pixel, etc.
 }
 
 // Função para rejeitar os cookies
@@ -35,7 +131,7 @@ function setupTrimester() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
-  const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 2)];
+  const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
   document.getElementById('trimester').textContent = `${trimester} TRIMESTRE ${year}`;
 }
 
@@ -167,56 +263,77 @@ function toggleLoading(show) {
     overlay.classList.remove('visible');
   }
 }
-let captchaCorreto = null;
-let continuarEnvio = false;
 
-// Gera uma pergunta aleatória de matemática simples
-function mostrarCaptchaPersonalizado() {
-  const modal = document.getElementById('captcha-modal');
-  const perguntaEl = document.getElementById('captcha-question');
-  const inputEl = document.getElementById('captcha-answer');
+function mostrarCaptchaSelecao() {
+  const opcoes = [
+    { texto: "Cachorro", correta: false },
+    { texto: "Gato", correta: false },
+    { texto: "Robô", correta: true }
+  ];
 
-  const num1 = Math.floor(Math.random() * 10) + 1;
-  const num2 = Math.floor(Math.random() * 10) + 1;
+  opcoes.sort(() => 0.5 - Math.random());
 
-  captchaCorreto = num1 + num2;
-  perguntaEl.textContent = `Quanto é ${num1} + ${num2}?`;
-  inputEl.value = '';
+  const container = document.getElementById('captcha-options');
+  container.innerHTML = '';
+  container.dataset.respostaCorreta = '';
 
-  modal.style.display = 'flex';
+  opcoes.forEach(opcao => {
+    const btn = document.createElement('button');
+    btn.textContent = opcao.texto;
+    btn.style.padding = '10px 20px';
+    btn.style.margin = '0 10px';
+    btn.style.cursor = 'pointer';
+    btn.style.border = '1px solid #ccc';
+    btn.style.borderRadius = '5px';
+    btn.style.backgroundColor = '#f0f0f0';
+
+    btn.onclick = function() {
+      document.querySelectorAll('#captcha-options button').forEach(b => b.style.backgroundColor = '#f0f0f0');
+      btn.style.backgroundColor = '#a5d6a7';
+      container.dataset.respostaCorreta = opcao.correta;
+    };
+
+    container.appendChild(btn);
+  });
+
+  document.getElementById('captcha-modal').style.display = 'flex';
 }
 
-// Valida a resposta
-function verificarCaptchaResposta() {
-  const resposta = parseInt(document.getElementById('captcha-answer').value);
-  if (resposta === captchaCorreto) {
+function verificarCaptchaSelecao() {
+  const container = document.getElementById('captcha-options');
+  const correta = container.dataset.respostaCorreta === "true";
+
+  if (correta) {
     document.getElementById('captcha-modal').style.display = 'none';
-    continuarEnvio = true;
-    generateAndSharePDF(); // Chama a função original novamente após passar no captcha
+    captchaResolvido = true;
+    generateAndSharePDF();
   } else {
-    showToast('Resposta incorreta. Tente novamente.');
+    showToast('Selecione a imagem correta.');
   }
 }
 
-// 🔁 NOVA FUNÇÃO ATUALIZADA
 function generateAndSharePDF() {
-    
-   // Impede execução até resolver o captcha
-  if (!continuarEnvio) {
-    mostrarCaptchaPersonalizado();
+  if (!captchaResolvido) {
+    // Mostra o CAPTCHA tradicional
+    showCaptcha();
+    // Define a função de callback para quando o CAPTCHA for resolvido
+    window.onCaptchaSuccess = function() {
+      captchaResolvido = true;
+      generateAndSharePDF();
+    };
     return;
   }
-
-  continuarEnvio = false; // reseta para não permitir envio sem novo CAPTCHA
+  
+  captchaResolvido = false;
   calculateSubtotals();
-  // Esconde os botões temporariamente
-const buttons = document.querySelectorAll('.no-print');
-buttons.forEach(btn => btn.style.display = 'none');
-
+  
+  const buttons = document.querySelectorAll('.no-print');
+  buttons.forEach(btn => btn.style.display = 'none');
 
   const total = document.getElementById('total').textContent;
   if (total === 'R$ 0,00') {
     showToast('Adicione pelo menos um item ao pedido!');
+    buttons.forEach(btn => btn.style.display = '');
     return;
   }
 
@@ -228,15 +345,13 @@ buttons.forEach(btn => btn.style.display = 'none');
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
-// AJUSTES PARA A4 PERFEITO (SEM EXCESSO DE EXPANSÃO)
-  const a4Width = 794; // Valor ajustado entre 650-750px (experimente o melhor para seu layout)
-  const a4Height = 720; // Altura A4 em pixels (297mm)
+  const a4Width = 794;
+  const a4Height = 1123;
 
-  // Aplicar estilos otimizados
   element.style.width = `${a4Width}px`;
-  element.style.padding = '10px'; // Padding controlado
-  element.style.margin = '0 auto'; // Centralizado
-  element.style.transform = 'none'; // Remove qualquer scale anterior
+  element.style.padding = '10px';
+  element.style.margin = '0 auto';
+  element.style.transform = 'none';
   element.style.boxSizing = 'border-box';
 
   const opt = {
@@ -284,14 +399,14 @@ buttons.forEach(btn => btn.style.display = 'none');
       window.open(whatsappUrl, '_blank');
       document.body.removeChild(a);
       URL.revokeObjectURL(pdfUrl);
-
-      // Restaura estilos
       element.style.transform = "";
       element.style.transformOrigin = "";
+      buttons.forEach(btn => btn.style.display = '');
     }, 1000);
   }).catch(err => {
     console.error('Erro ao gerar PDF:', err);
     toggleLoading(false);
+    buttons.forEach(btn => btn.style.display = '');
     showToast('Erro ao gerar PDF. Por favor, tente novamente.');
   });
 }
