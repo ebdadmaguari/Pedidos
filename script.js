@@ -231,7 +231,7 @@ buttons.forEach(btn => btn.style.display = 'none');
 
 // AJUSTES PARA A4 PERFEITO (SEM EXCESSO DE EXPANSÃO)
   const a4Width = 794; // Valor ajustado entre 650-750px (experimente o melhor para seu layout)
-  const a4Height = 720; // Altura A4 em pixels (297mm)
+  const a4Height = 1123; // Altura A4 em pixels (297mm)
 
   // Aplicar estilos otimizados
   element.style.width = `${a4Width}px`;
