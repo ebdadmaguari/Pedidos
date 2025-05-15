@@ -132,19 +132,21 @@
       font-size: 12px;
     }
 
-    th, td {
+      th, td {
       border: 1px solid var(--border-color);
-      padding: 6px 8px;
+      padding: 2px 5px;
       text-align: left;
+      
     }
 
     th {
       background-color: var(--primary);
       color: white;
       font-weight: 600;
-      font-size: 9px;
+      font-size: 10px;
       text-transform: uppercase;
     }
+
 
     .category-header {
       background-color: var(--primary-dark);
