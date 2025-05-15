@@ -331,6 +331,11 @@
   text-align: center;
   font-size: 11px; /* menor fonte */
 }
+#captcha-modal {
+  display: none;
+  position: fixed;
+  /* outros estilos */
+}
 
 .linha-assinatura, .linha-datas {
     font-size: 11px; /* menor fonte */
