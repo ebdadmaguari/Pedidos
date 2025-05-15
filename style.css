@@ -19,7 +19,6 @@
       --transition: all 0.2s ease-in-out;
     }
 
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -133,7 +132,7 @@
       font-size: 12px;
     }
 
-      th, td {
+    th, td {
       border: 1px solid var(--border-color);
       padding: 2px 5px;
       text-align: left;
@@ -147,7 +146,6 @@
       font-size: 10px;
       text-transform: uppercase;
     }
-
 
     .category-header {
       background-color: var(--primary-dark);
@@ -293,7 +291,7 @@
       }
 
       th, td {
-        padding: 4px 6px;
+        padding: 4px 5px;
       }
 
       .qty-input {
@@ -329,20 +327,24 @@
 
 .assinaturas {
   text-align: center;
+  font-size: 11px; /* menor fonte */
 }
 
 .linha-assinatura, .linha-datas {
+    font-size: 11px; /* menor fonte */
   display: flex;
   justify-content: space-between;
   margin: 20px 0;
 }
 
 .campo {
-  width: 45%;
+    font-size: 11px; /* menor fonte */
+  width: 48%;
   text-align: center;
 }
 
 .assinatura-centro {
+    font-size: 11px; /* menor fonte */
   font-weight: bold;
   margin-bottom: 10px;
 }
