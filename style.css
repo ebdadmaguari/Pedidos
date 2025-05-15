@@ -322,15 +322,7 @@
     font-family: 'Segoe UI', sans-serif;
     transition: transform 0.3s ease;
   }
-  .assinatura-box {
-  border-top: 2px solid black;
-  padding-top: 10px;
-  max-width: 700px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  color: #000;
-}
+ 
 
 .assinaturas {
   text-align: center;
@@ -343,7 +335,7 @@
 }
 
 .campo {
-  width: 48%;
+  width: 45%;
   text-align: center;
 }
 
