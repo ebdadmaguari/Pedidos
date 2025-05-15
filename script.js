@@ -198,12 +198,7 @@ function verificarCaptchaResposta() {
     showToast('Resposta incorreta. Tente novamente.');
   }
 }
- inputEl.focus();
-inputEl.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    verificarCaptchaResposta();
-  }
-});
+ 
 
 // 🔁 NOVA FUNÇÃO ATUALIZADA
 function generateAndSharePDF() {
