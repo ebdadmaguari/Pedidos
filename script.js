@@ -276,7 +276,7 @@ function generateAndSharePDF() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 2)];
 
     const a4Width = 794;
     const a4Height = 794;
@@ -285,6 +285,7 @@ function generateAndSharePDF() {
     element.style.padding = '10px';
     element.style.margin = '0 auto';
     element.style.transform = 'scale(1)';
+
     element.style.boxSizing = 'border-box';
 
     const opt = {
