@@ -245,16 +245,16 @@
         </tbody>
       </table>
     </div>
- <div class="assinatura-box">
+    <div class="assinatura-box">
   <div class="assinaturas">
     <div class="linha-assinatura">
       <div class="campo">
         ____________________________<br>
-        DIRIGENTE
+                DIRIGENTE
       </div>
       <div class="campo">
         ____________________________<br>
-        COORDENADOR (A)
+             COORDENADOR (A)
       </div>
     </div>
     <div class="assinatura-centro">
@@ -273,9 +273,6 @@
   </div>
 </div>
 
-   
-
-
     </div>
   </div>
 
@@ -290,15 +287,50 @@
       <button class="btn btn-whatsapp" onclick="generateAndSharePDF()">
         <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
       </button>
-      <!-- Modal CAPTCHA personalizado -->
-<div id="captcha-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000;">
-  <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; width: 300px;">
-    <p id="captcha-question" style="font-weight: bold; margin-bottom: 10px;"></p>
-    <input type="text" id="captcha-answer" placeholder="Digite a resposta" style="padding: 5px; width: 100%; margin-bottom: 10px;">
-    <button onclick="verificarCaptchaResposta()" style="padding: 5px 15px;">Confirmar</button>
+<div id="captcha-modal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; font-family: Arial, sans-serif;">
+  <div style="background: #fff; padding: 25px; border-radius: 8px; text-align: center; width: 300px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+      <div style="width: 32px; height: 32px; background: #f1f1f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+        <span style="font-size: 18px;">✓</span>
+      </div>
+      <h3 style="margin: 0; color: #333; font-size: 16px; font-weight: normal;">Verificação necessária</h3>
+    </div>
+    
+    <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" id="not-robot-checkbox" style="width: 18px; height: 18px; margin-right: 10px;">
+          <label for="not-robot-checkbox" style="font-size: 14px; color: #555;">Eu não sou um robô</label>
+        </div>
+        <div style="width: 24px; height: 24px; background: #4285F4; border-radius: 2px;"></div>
+      </div>
+      
+      <div id="captcha-code-container" style="display: none;">
+        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Digite o código abaixo:</p>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div id="captcha-code" style="font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: 2px; background: #fff; padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; user-select: none;">rG2APTOHA</div>
+          <button id="refresh-captcha" style="background: none; border: none; color: #1a73e8; cursor: pointer; font-size: 12px; margin-left: 10px;">Atualizar</button>
+        </div>
+        <input type="text" id="captcha-input" placeholder="Digite o código" style="width: 100%; padding: 8px; margin-top: 10px; border: 1px solid #ddd; border-radius: 3px; font-size: 14px;">
+      </div>
+    </div>
+    
+    <div id="captcha-error" style="color: #d93025; font-size: 12px; height: 18px; margin-bottom: 15px;"></div>
+    
+    <div style="display: flex; justify-content: flex-end;">
+      <button id="verify-captcha" style="background: #1a73e8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">Verificar</button>
+    </div>
+    
+    <div style="margin-top: 20px; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
+      <div style="display: flex; justify-content: center;">
+        <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Privacidade</a>
+        <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Termos</a>
+      </div>
+    </div>
   </div>
 </div>
+
+
      <!-- Loading overlay -->
   <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
