@@ -279,7 +279,7 @@ function generateAndSharePDF() {
     const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
     const a4Width = 794;
-    const a4Height = 1123;
+    const a4Height = 794;
 
     element.style.width = `${a4Width}px`;
     element.style.padding = '10px';
