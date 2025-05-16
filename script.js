@@ -306,11 +306,23 @@ function generateAndSharePDF() {
 
       // Redirecionamento para WhatsApp após download
       setTimeout(() => {
-        window.open(whatsappUrl, '_blank');
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pdfUrl);
-        buttons.forEach(btn => btn.style.display = '');
-      }, 1000);
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = opt.filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+
+    // Espera mais 5 segundos e abre WhatsApp
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank');
+      document.body.removeChild(a);
+      URL.revokeObjectURL(pdfUrl);
+      buttons.forEach(btn => btn.style.display = '');
+      toggleLoading(false);
+    }, 5000);
+
+  }, 1000);
     }).catch(err => {
       console.error('Erro ao gerar PDF:', err);
       toggleLoading(false);
