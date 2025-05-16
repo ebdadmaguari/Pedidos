@@ -10,7 +10,7 @@
       --row-orange: #fff4ec;
       --row-green: #edf7ef;
       --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      --radius: 4px;
+      --radius: 2px;
       --space-1: 4px;
       --space-2: 4px;
       --space-3: 12px;
@@ -53,10 +53,11 @@
     }
 
     .logo img {
-      max-width: 100px;
+      max-width: 120px;
       height: auto;
       border-radius: var(--radius);
       object-fit: contain;
+      
     }
 
     .texto-central {
@@ -88,27 +89,53 @@
       color: var(--primary-dark);
     }
 
-    .form-header {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-2);
-      margin-bottom: var(--space-3);
-      background-color: #f5f8ff;
-      padding: var(--space-2);
-      border-radius: var(--radius);
-    }
+   .form-header {
+    display: grid;
+    margin-bottom: var(--space-3);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background-color: #f5f8ff;
+    border-radius: var(--radius);
+    color: #155ab6;
+  }
 
-    .form-group {
-      margin-bottom: var(--space-2);
-    }
+.form-group1,
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
 
-    .form-group label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: var(--space-1);
-      font-size: 12px;
-      color: var(--primary-dark);
-    }
+.form-group1 label,
+.form-group label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #155ab6;
+}
+
+.form-group1 select,
+.form-group input {
+  padding: 4px 8px;
+  font-size: 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group1 select:focus,
+.form-group input:focus {
+  border-color: #155ab6;
+  outline: none;
+  box-shadow: 0 0 5px rgba(21, 90, 182, 0.2);
+}
+
+.form-group1 select:disabled {
+  background-color: #eef2f8;
+  color: #888;
+  cursor: not-allowed;
+}
 
     input[type="text"],
     input[type="tel"] {
