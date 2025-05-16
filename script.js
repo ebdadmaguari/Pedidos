@@ -304,7 +304,6 @@ function generateAndSharePDF() {
 
       toggleLoading(false);
 
-      // Redirecionamento para WhatsApp após download
       setTimeout(() => {
     const a = document.createElement('a');
     a.href = pdfUrl;
@@ -354,3 +353,49 @@ function resetForm() {
 
   showToast('Formulário limpo com sucesso!');
 }
+const congregationsByGroup = {
+    grupo1: ["PORTA FORMOSA", "SAMARIA", " ÁGAPE", "CANÁ DA GALILÉIA"],
+    grupo2: ["TEMPLO CENTRAL", "ALOÉS", "NOVA GALILÉIA", "GILGAL"],
+    grupo3: ["BERSEBA", "PÃO DA VIDA", "MONTE SANTO", "MONTE DAS OLIVEIRA"],
+    grupo4: ["EL SHADAY", "CORINTO", "DEUS PROVERÁ", "ÉFESO"],
+    grupo5: ["SALMO 91", "MONTE HERMON", "FILADÉLFIA", "BETESDA"],
+    grupo6: ["PENIEL", "NOVA JERUSALÉM", "VITÓRIA", "ROCHA ETERNA"],
+    grupo7: ["VALE DO JORDÃO ", "JARDIM DE DEUS ", "CÂNTICO DE VITÓRIA ", "ROSA DE SARON "],
+    grupo8: ["FONTE DE ÁGUA VIVA", "JEOVÁ JIRÉ", "NOVA VIDA", "P.P.ARCA DO SENHOR"],
+    grupo9: ["GETSÊMANI", "MANÁ", "VAU DE JABOQUE", "NOVA ALIANÇA"],
+    grupo10: ["CANTINHO DO CÉU", "BOM SAMARITANO", "TERRA SANTA", "JUDEIA"],
+    grupo11: ["SEARA DO SENHOR", "TORRE FORTE", "CAFARNAUM", "MONTE SINAI"],
+    grupo12: ["BRILHO CELESTE", "RAIZ DE JESSÉ", "JASPE", "MAANAIM"],
+    grupo13: ["NOVA CANAÃ","MONTE SIÃO", "MONTE GERESIM" ],
+    grupo14: ["SELO DA PROMESSA", "NINIVE", "SHEKINÁ", "MONTE HOREBE"],
+    grupo15: ["SALVADOR", "BÁLSAMO DE GILEADE", "LÍRIO DOS VALES", "EL ELYON"],
+    grupo16: ["ALTO REFÚGIO", "SILOÉ", "MARANATA", "MANANCIAL"],
+    grupo17: ["BETÂNIA", "SICAR", "POÇO DE JACÓ" ],
+    grupo18: ["MONTE TABOR", "JOPE", "MONTE CARMELO"],
+    grupo19: ["REVELAÇÃO", "NOVO HORIZONTE", "ORVALHO DE HREMOM", "MONTE MORIÁ"],
+    grupo20: ["ELO DA SALVAÇÃO", "NOVA BETEL", "CESAREIA", "HEBROM"]
+
+
+  };
+
+  function updateCongregations() {
+    const groupSelect = document.getElementById("group");
+    const congregationSelect = document.getElementById("congregation");
+    const selectedGroup = groupSelect.value;
+
+    // Limpa opções anteriores
+    congregationSelect.innerHTML = '<option value="">Selecione a congregação</option>';
+
+    if (selectedGroup && congregationsByGroup[selectedGroup]) {
+      congregationSelect.disabled = false;
+
+      congregationsByGroup[selectedGroup].forEach(cong => {
+        const option = document.createElement("option");
+        option.value = cong.toLowerCase().replace(/\s+/g, '-');
+        option.textContent = cong;
+        congregationSelect.appendChild(option);
+      });
+    } else {
+      congregationSelect.disabled = true;
+    }
+  }
