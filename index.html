@@ -35,21 +35,48 @@
       <h2>PEDIDO DE REVISTAS - <span id="trimester">TRIMESTRE 202_</span></h2>
     </div>
 
+    <<div class="title-container">
+      <h2>PEDIDO DE REVISTAS - <span id="trimester">TRIMESTRE 202_</span></h2>
+    </div>
     <div class="form-header">
-      <div class="form-group">
-        <label>CONGREGAÇÃO:</label>
-        <input type="text" id="congregation" placeholder="Nome da congregação">
+      <div class="form-group1">
+        <label><b>GRUPO:</b></label>
+        <select id="group" onchange="updateCongregations()">
+      <option value="">Selecione o grupo</option>
+      <option value="grupo1">Grupo 01</option>
+      <option value="grupo2">Grupo 02</option>
+      <option value="grupo3">Grupo 03</option>
+      <option value="grupo4">Grupo 04</option>
+      <option value="grupo5">Grupo 05</option>
+      <option value="grupo6">Grupo 06</option>
+      <option value="grupo7">Grupo 07</option>
+      <option value="grupo8">Grupo 08</option>
+      <option value="grupo9">Grupo 09</option>
+      <option value="grupo10">Grupo 10</option>
+      <option value="grupo11">Grupo 11</option>
+      <option value="grupo12">Grupo 12</option>
+      <option value="grupo13">Grupo 13</option>
+      <option value="grupo14">Grupo 14</option>
+      <option value="grupo15">Grupo 15</option>
+      <option value="grupo16">Grupo 16</option>
+      <option value="grupo17">Grupo 17</option>
+      <option value="grupo18">Grupo 18</option>
+      <option value="grupo19">Grupo 19</option>
+      <option value="grupo20">Grupo 20</option>
+    </select>
+      </div>
+      <div class="form-group1">
+        <label><b>CONGREGAÇÃO:</b></label>
+        <select id="congregation" disabled>
+      <option value="">Selecione a congregação</option>
+    </select>
       </div>
       <div class="form-group">
-        <label>GRUPO:</label>
-        <input type="text" id="group" placeholder="Nome do grupo">
-      </div>
-      <div class="form-group">
-        <label>COORDENADOR(A):</label>
+        <label><B>COORDENADOR(A):</B></label>
         <input type="text" id="coordinator" placeholder="Nome do coordenador">
       </div>
       <div class="form-group">
-        <label>FONE:</label>
+        <label><B>FONE:</B></label>
         <input type="tel" id="phone" placeholder="(00) 00000-0000">
       </div>
     </div>
