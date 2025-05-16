@@ -53,7 +53,7 @@
     }
 
     .logo img {
-      max-width: 105px;
+      max-width: 100px;
       height: auto;
       border-radius: var(--radius);
       object-fit: contain;
