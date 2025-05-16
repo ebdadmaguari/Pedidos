@@ -1,138 +1,48 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicializações
   setupTrimester();
   setupQuantityInputs();
   setupPhoneFormatting();
   initCaptcha();
-  
-  // Vincula os eventos dos botões
+  verificarConsentimentoCookies();
+
+  // Event listeners
   const btnEnviar = document.getElementById('btn-enviar');
   if (btnEnviar) {
     btnEnviar.addEventListener('click', generateAndSharePDF);
   }
-  
+
   const btnVerificarCaptcha = document.getElementById('btn-verificar-captcha');
   if (btnVerificarCaptcha) {
-    btnVerificarCaptcha.addEventListener('click', verificarCaptchaSelecao);
+    btnVerificarCaptcha.addEventListener('click', verificarCaptcha);
+  }
+
+  const btnAceitarCookies = document.getElementById('btn-aceitar-cookies');
+  if (btnAceitarCookies) {
+    btnAceitarCookies.addEventListener('click', aceitarCookies);
+  }
+
+  const btnRejeitarCookies = document.getElementById('btn-rejeitar-cookies');
+  if (btnRejeitarCookies) {
+    btnRejeitarCookies.addEventListener('click', rejeitarCookies);
   }
 });
 
-// Variável para armazenar o código CAPTCHA atual
+// Variáveis globais
+let captchaVerificado = false;
 let currentCaptchaCode = '';
-let captchaResolvido = false;
 
-// Inicializa o CAPTCHA
-function initCaptcha() {
-  // Event listeners para o CAPTCHA tradicional
-  const robotCheckbox = document.getElementById('not-robot-checkbox');
-  if (robotCheckbox) {
-    robotCheckbox.addEventListener('change', function() {
-      if (this.checked) {
-        generateCaptchaCode();
-        document.getElementById('captcha-code-container').style.display = 'block';
-      } else {
-        document.getElementById('captcha-code-container').style.display = 'none';
-      }
-    });
-  }
-  
-  const refreshCaptcha = document.getElementById('refresh-captcha');
-  if (refreshCaptcha) {
-    refreshCaptcha.addEventListener('click', generateCaptchaCode);
-  }
-  
-  const verifyCaptcha = document.getElementById('verify-captcha');
-  if (verifyCaptcha) {
-    verifyCaptcha.addEventListener('click', verifyCaptcha);
-  }
-}
-
-// Gera um novo código CAPTCHA
-function generateCaptchaCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-  let code = '';
-  
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  
-  currentCaptchaCode = code;
-  document.getElementById('captcha-code').textContent = code;
-  document.getElementById('captcha-input').value = '';
-  document.getElementById('captcha-error').textContent = '';
-}
-
-// Verifica o CAPTCHA tradicional
-function verifyCaptcha() {
-  const checkbox = document.getElementById('not-robot-checkbox');
-  const errorEl = document.getElementById('captcha-error');
-  
-  if (!checkbox.checked) {
-    errorEl.textContent = 'Por favor, marque a caixa de verificação.';
-    return false;
-  }
-  
-  const userInput = document.getElementById('captcha-input').value.trim();
-  
-  if (userInput === '') {
-    errorEl.textContent = 'Por favor, digite o código de verificação.';
-    return false;
-  }
-  
-  if (userInput !== currentCaptchaCode) {
-    errorEl.textContent = 'Código incorreto. Tente novamente.';
-    generateCaptchaCode();
-    return false;
-  }
-  
-  // CAPTCHA verificado com sucesso
-  document.getElementById('captcha-modal').style.display = 'none';
-  captchaResolvido = true;
-  if (typeof window.onCaptchaSuccess === 'function') {
-    window.onCaptchaSuccess();
-  }
-  return true;
-}
-
-// Mostra o CAPTCHA
-function showCaptcha() {
-  document.getElementById('not-robot-checkbox').checked = false;
-  document.getElementById('captcha-code-container').style.display = 'none';
-  document.getElementById('captcha-error').textContent = '';
-  document.getElementById('captcha-modal').style.display = 'flex';
-}
-
-// Função para verificar o consentimento
-function verificarConsentimentoCookies() {
-  const consentimento = localStorage.getItem("cookieConsent");
-
-  if (!consentimento) {
-    document.getElementById("cookie-banner").style.display = "block";
-  }
-}
-
-// Função para aceitar os cookies
-function aceitarCookies() {
-  localStorage.setItem("cookieConsent", "aceito");
-  document.getElementById("cookie-banner").style.display = "none";
-  console.log("Cookies aceitos.");
-}
-
-// Função para rejeitar os cookies
-function rejeitarCookies() {
-  localStorage.setItem("cookieConsent", "rejeitado");
-  document.getElementById("cookie-banner").style.display = "none";
-  console.log("Cookies rejeitados.");
-}
-
-// Executa ao carregar a página
-window.onload = verificarConsentimentoCookies;
-
+// Funções de inicialização
 function setupTrimester() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
-  document.getElementById('trimester').textContent = `${trimester} TRIMESTRE ${year}`;
+  const trimesterElement = document.getElementById('trimester');
+  
+  if (trimesterElement) {
+    trimesterElement.textContent = `${trimester} TRIMESTRE ${year}`;
+  }
 }
 
 function setupQuantityInputs() {
@@ -149,20 +59,106 @@ function setupQuantityInputs() {
 
 function setupPhoneFormatting() {
   const phoneInput = document.getElementById('phone');
-  phoneInput.addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 11) {
-      if (value.length > 2) {
-        value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 11) {
+        if (value.length > 2) {
+          value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+        }
+        if (value.length > 10) {
+          value = `${value.substring(0, 10)}-${value.substring(10)}`;
+        }
+        e.target.value = value;
       }
-      if (value.length > 10) {
-        value = `${value.substring(0, 10)}-${value.substring(10)}`;
-      }
-      e.target.value = value;
-    }
-  });
+    });
+  }
 }
 
+// Funções do CAPTCHA
+function initCaptcha() {
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  const verifyBtn = document.getElementById('btn-verify');
+  const errorMsg = document.getElementById('captcha-error');
+
+  if (robotCheckbox) {
+    robotCheckbox.addEventListener('change', function() {
+      if (verifyBtn) verifyBtn.disabled = !this.checked;
+      if (errorMsg) errorMsg.textContent = '';
+    });
+  }
+
+  if (verifyBtn) {
+    verifyBtn.addEventListener('click', verificarCaptcha);
+  }
+}
+
+function verificarCaptcha() {
+  const checkbox = document.getElementById('not-robot-checkbox');
+  const errorEl = document.getElementById('captcha-error');
+  const captchaModal = document.getElementById('captcha-modal');
+
+  if (!checkbox || !checkbox.checked) {
+    if (errorEl) errorEl.textContent = 'Por favor, marque "Não sou um robô" para continuar.';
+    return false;
+  }
+
+  // CAPTCHA verificado com sucesso
+  captchaVerificado = true;
+  if (captchaModal) captchaModal.style.display = 'none';
+  
+  if (typeof window.onCaptchaSuccess === 'function') {
+    window.onCaptchaSuccess();
+  }
+  
+  return true;
+}
+
+function showCaptcha() {
+  const captchaModal = document.getElementById('captcha-modal');
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  const errorMsg = document.getElementById('captcha-error');
+  const verifyBtn = document.getElementById('btn-verify');
+
+  if (captchaModal) captchaModal.style.display = 'flex';
+  if (robotCheckbox) robotCheckbox.checked = false;
+  if (errorMsg) errorMsg.textContent = '';
+  if (verifyBtn) verifyBtn.disabled = true;
+}
+
+function isCaptchaVerified() {
+  return captchaVerificado;
+}
+
+function resetCaptcha() {
+  captchaVerificado = false;
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  if (robotCheckbox) robotCheckbox.checked = false;
+}
+
+// Funções de cookies
+function verificarConsentimentoCookies() {
+  const consentimento = localStorage.getItem("cookieConsent");
+  const cookieBanner = document.getElementById("cookie-banner");
+  
+  if (!consentimento && cookieBanner) {
+    cookieBanner.style.display = "block";
+  }
+}
+
+function aceitarCookies() {
+  localStorage.setItem("cookieConsent", "aceito");
+  const cookieBanner = document.getElementById("cookie-banner");
+  if (cookieBanner) cookieBanner.style.display = "none";
+}
+
+function rejeitarCookies() {
+  localStorage.setItem("cookieConsent", "rejeitado");
+  const cookieBanner = document.getElementById("cookie-banner");
+  if (cookieBanner) cookieBanner.style.display = "none";
+}
+
+// Funções de cálculo e formatação
 function calculateSubtotals() {
   let grandTotal = 0;
 
@@ -183,20 +179,18 @@ function calculateSubtotals() {
       subtotalCell.textContent = formatCurrency(rowTotal);
       subtotalCell.style.transition = 'background-color 0.3s';
       subtotalCell.style.backgroundColor = '#f0f7ff';
-      setTimeout(() => {
-        subtotalCell.style.backgroundColor = '';
-      }, 500);
+      setTimeout(() => subtotalCell.style.backgroundColor = '', 500);
       grandTotal += rowTotal;
     }
   });
 
   const totalElement = document.getElementById('total');
-  totalElement.textContent = formatCurrency(grandTotal);
-  totalElement.style.transition = 'background-color 0.3s';
-  totalElement.style.backgroundColor = '#f0f7ff';
-  setTimeout(() => {
-    totalElement.style.backgroundColor = '';
-  }, 500);
+  if (totalElement) {
+    totalElement.textContent = formatCurrency(grandTotal);
+    totalElement.style.transition = 'background-color 0.3s';
+    totalElement.style.backgroundColor = '#f0f7ff';
+    setTimeout(() => totalElement.style.backgroundColor = '', 500);
+  }
 
   return grandTotal;
 }
@@ -205,29 +199,7 @@ function formatCurrency(value) {
   return 'R$ ' + value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+\,)/g, '$1.');
 }
 
-function resetForm() {
-  document.getElementById('congregation').value = '';
-  document.getElementById('group').value = '';
-  document.getElementById('coordinator').value = '';
-  document.getElementById('phone').value = '';
-
-  document.querySelectorAll('.qty-input').forEach(input => {
-    input.value = '';
-  });
-
-  document.querySelectorAll('.subtotal').forEach(cell => {
-    cell.textContent = 'R$ 0,00';
-  });
-
-  document.getElementById('total').textContent = 'R$ 0,00';
-  showToast('Formulário limpo com sucesso!');
-}
-
-function calculateTotal() {
-  const total = calculateSubtotals();
-  showToast(`Total calculado: ${formatCurrency(total)}`);
-}
-
+// Funções de UI
 function showToast(message) {
   const existingToast = document.querySelector('.toast');
   if (existingToast) existingToast.remove();
@@ -246,108 +218,33 @@ function showToast(message) {
   toast.style.zIndex = '1000';
   toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
   document.body.appendChild(toast);
+  
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity 0.5s ease';
-    setTimeout(() => {
-      toast.remove();
-    }, 500);
+    setTimeout(() => toast.remove(), 500);
   }, 3000);
 }
 
 function toggleLoading(show) {
   const overlay = document.getElementById('loading-overlay');
-  if (show) {
-    overlay.classList.add('visible');
-  } else {
-    overlay.classList.remove('visible');
+  if (overlay) {
+    overlay.classList.toggle('visible', show);
   }
 }
 
-// Variável para armazenar o código CAPTCHA atual
-//let currentCaptchaCode = '';
-
-// Inicializa o CAPTCHA
-function initCaptcha() {
-  // Event listeners
-  document.getElementById('not-robot-checkbox').addEventListener('change', function() {
-    if (this.checked) {
-      generateCaptchaCode();
-      document.getElementById('captcha-code-container').style.display = 'block';
-    } else {
-      document.getElementById('captcha-code-container').style.display = 'none';
-    }
-  });
-
-  document.getElementById('refresh-captcha').addEventListener('click', generateCaptchaCode);
-  document.getElementById('verify-captcha').addEventListener('click', verifyCaptcha);
-}
-
-// Gera um novo código CAPTCHA
-function generateCaptchaCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-  let code = '';
-
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  currentCaptchaCode = code;
-  document.getElementById('captcha-code').textContent = code;
-  document.getElementById('captcha-input').value = '';
-  document.getElementById('captcha-error').textContent = '';
-}
-
-// Verifica o CAPTCHA
-function verifyCaptcha() {
-  const checkbox = document.getElementById('not-robot-checkbox');
-  const errorEl = document.getElementById('captcha-error');
-
-  if (!checkbox.checked) {
-    errorEl.textContent = 'Por favor, marque a caixa de verificação.';
-    return false;
-  }
-
-  const userInput = document.getElementById('captcha-input').value.trim();
-
-  if (userInput === '') {
-    errorEl.textContent = 'Por favor, digite o código de verificação.';
-    return false;
-  }
-
-  if (userInput !== currentCaptchaCode) {
-    errorEl.textContent = 'Código incorreto. Tente novamente.';
-    generateCaptchaCode();
-    return false;
-  }
-
-  // CAPTCHA verificado com sucesso
-  document.getElementById('captcha-modal').style.display = 'none';
-  window.onCaptchaSuccess();
-  return true;
-}
-
-// Mostra o CAPTCHA
-function showCaptcha() {
-  document.getElementById('not-robot-checkbox').checked = false;
-  document.getElementById('captcha-code-container').style.display = 'none';
-  document.getElementById('captcha-error').textContent = '';
-  document.getElementById('captcha-modal').style.display = 'flex';
-}
-
-// Modifique sua função generateAndSharePDF para usar o CAPTCHA
+// Função principal para gerar e compartilhar PDF
 function generateAndSharePDF() {
   showCaptcha();
 
   window.onCaptchaSuccess = function() {
-    captchaResolvido = false;
     calculateSubtotals();
 
     const buttons = document.querySelectorAll('.no-print');
     buttons.forEach(btn => btn.style.display = 'none');
 
-    const total = document.getElementById('total').textContent;
-    if (total === 'R$ 0,00') {
+    const totalElement = document.getElementById('total');
+    if (!totalElement || totalElement.textContent === 'R$ 0,00') {
       showToast('Adicione pelo menos um item ao pedido!');
       buttons.forEach(btn => btn.style.display = '');
       return;
@@ -361,15 +258,7 @@ function generateAndSharePDF() {
     const month = now.getMonth();
     const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
-    const a4Width = 794;
-    const a4Height = 1123;
-
-    element.style.width = `${a4Width}px`;
-    element.style.padding = '10px';
-    element.style.margin = '0 auto';
-    element.style.transform = 'none';
-    element.style.boxSizing = 'border-box';
-
+    // Configuração do PDF
     const opt = {
       margin: 0,
       filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
@@ -386,14 +275,17 @@ function generateAndSharePDF() {
       }
     };
 
+    // Dados do formulário
     const congregation = document.getElementById('congregation').value || 'Não informado';
     const coordinator = document.getElementById('coordinator').value || 'Não informado';
     const phone = document.getElementById('phone').value || 'Não informado';
 
+    // Geração do PDF
     html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
+      // Mensagem para WhatsApp
       const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
         `*Congregação:* ${congregation}\n` +
         `*Coordenador:* ${coordinator}\n` +
@@ -403,6 +295,7 @@ function generateAndSharePDF() {
 
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
+      // Download do PDF
       const a = document.createElement('a');
       a.href = pdfUrl;
       a.download = opt.filename;
@@ -411,12 +304,11 @@ function generateAndSharePDF() {
 
       toggleLoading(false);
 
+      // Redirecionamento para WhatsApp após download
       setTimeout(() => {
         window.open(whatsappUrl, '_blank');
         document.body.removeChild(a);
         URL.revokeObjectURL(pdfUrl);
-        element.style.transform = "";
-        element.style.transformOrigin = "";
         buttons.forEach(btn => btn.style.display = '');
       }, 1000);
     }).catch(err => {
@@ -428,19 +320,25 @@ function generateAndSharePDF() {
   };
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  setupTrimester();
-  setupQuantityInputs();
-  setupPhoneFormatting();
-  initCaptcha();
+// Função para resetar o formulário
+function resetForm() {
+  // Resetar campos de texto
+  ['congregation', 'group', 'coordinator', 'phone'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.value = '';
+  });
 
-  const btnEnviar = document.getElementById('btn-enviar');
-  if (btnEnviar) {
-    btnEnviar.addEventListener('click', generateAndSharePDF);
-  }
+  // Resetar quantidades e totais
+  document.querySelectorAll('.qty-input').forEach(input => {
+    input.value = '';
+  });
 
-  const btnVerificarCaptcha = document.getElementById('btn-verificar-captcha');
-  if (btnVerificarCaptcha) {
-    btnVerificarCaptcha.addEventListener('click', verificarCaptchaSelecao);
-  }
-});
+  document.querySelectorAll('.subtotal').forEach(cell => {
+    cell.textContent = 'R$ 0,00';
+  });
+
+  const totalElement = document.getElementById('total');
+  if (totalElement) totalElement.textContent = 'R$ 0,00';
+
+  showToast('Formulário limpo com sucesso!');
+}
