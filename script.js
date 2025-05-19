@@ -256,7 +256,7 @@ function generateAndSharePDF() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 2)];
 
     // Configuração do PDF
     const opt = {
@@ -303,14 +303,6 @@ function generateAndSharePDF() {
       a.click();
 
       toggleLoading(false);
-
-      setTimeout(() => {
-    const a = document.createElement('a');
-    a.href = pdfUrl;
-    a.download = opt.filename;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
 
     // Espera mais 5 segundos e abre WhatsApp
     setTimeout(() => {
