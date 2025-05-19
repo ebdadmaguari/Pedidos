@@ -295,14 +295,16 @@ function generateAndSharePDF() {
 
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
-      // Download do PDF
-      const a = document.createElement('a');
-      a.href = pdfUrl;
-      a.download = opt.filename;
-      document.body.appendChild(a);
-      a.click();
+     // Download do PDF
+const a = document.createElement('a');
+a.href = pdfUrl;
+a.download = opt.filename;
+a.style.display = 'none';
+document.body.appendChild(a);
+a.click();
 
-      toggleLoading(false);
+toggleLoading(false);
+
 
     // Espera mais 5 segundos e abre WhatsApp
     setTimeout(() => {
