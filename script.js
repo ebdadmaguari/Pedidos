@@ -1,57 +1,96 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicializações
   setupTrimester();
   setupQuantityInputs();
   setupPhoneFormatting();
   initCaptcha();
   verificarConsentimentoCookies();
 
-  document.getElementById('btn-enviar')?.addEventListener('click', generateAndSharePDF);
-  document.getElementById('btn-verificar-captcha')?.addEventListener('click', verificarCaptcha);
-  document.getElementById('btn-aceitar-cookies')?.addEventListener('click', aceitarCookies);
-  document.getElementById('btn-rejeitar-cookies')?.addEventListener('click', rejeitarCookies);
+  // Event listeners
+  const btnEnviar = document.getElementById('btn-enviar');
+  if (btnEnviar) {
+    btnEnviar.addEventListener('click', generateAndSharePDF);
+  }
+
+  const btnVerificarCaptcha = document.getElementById('btn-verificar-captcha');
+  if (btnVerificarCaptcha) {
+    btnVerificarCaptcha.addEventListener('click', verificarCaptcha);
+  }
+
+  const btnAceitarCookies = document.getElementById('btn-aceitar-cookies');
+  if (btnAceitarCookies) {
+    btnAceitarCookies.addEventListener('click', aceitarCookies);
+  }
+
+  const btnRejeitarCookies = document.getElementById('btn-rejeitar-cookies');
+  if (btnRejeitarCookies) {
+    btnRejeitarCookies.addEventListener('click', rejeitarCookies);
+  }
 });
 
+// Variáveis globais
 let captchaVerificado = false;
+let currentCaptchaCode = '';
 
+// Funções de inicialização
 function setupTrimester() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
-  document.getElementById('trimester')?.textContent = `${trimester} TRIMESTRE ${year}`;
+  const trimesterElement = document.getElementById('trimester');
+  
+  if (trimesterElement) {
+    trimesterElement.textContent = `${trimester} TRIMESTRE ${year}`;
+  }
 }
 
 function setupQuantityInputs() {
   document.querySelectorAll('.qty-input').forEach(input => {
     input.addEventListener('input', calculateSubtotals);
-    input.addEventListener('focus', () => input.style.backgroundColor = '#f0f7ff');
-    input.addEventListener('blur', () => input.style.backgroundColor = '');
+    input.addEventListener('focus', function() {
+      this.style.backgroundColor = '#f0f7ff';
+    });
+    input.addEventListener('blur', function() {
+      this.style.backgroundColor = '';
+    });
   });
 }
 
 function setupPhoneFormatting() {
   const phoneInput = document.getElementById('phone');
-  phoneInput?.addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 11) {
-      if (value.length > 2) value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
-      if (value.length > 10) value = `${value.substring(0, 10)}-${value.substring(10)}`;
-      e.target.value = value;
-    }
-  });
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 11) {
+        if (value.length > 2) {
+          value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+        }
+        if (value.length > 10) {
+          value = `${value.substring(0, 10)}-${value.substring(10)}`;
+        }
+        e.target.value = value;
+      }
+    });
+  }
 }
 
+// Funções do CAPTCHA
 function initCaptcha() {
-  const checkbox = document.getElementById('not-robot-checkbox');
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
   const verifyBtn = document.getElementById('btn-verify');
   const errorMsg = document.getElementById('captcha-error');
 
-  checkbox?.addEventListener('change', function() {
-    verifyBtn.disabled = !this.checked;
-    if (errorMsg) errorMsg.textContent = '';
-  });
+  if (robotCheckbox) {
+    robotCheckbox.addEventListener('change', function() {
+      if (verifyBtn) verifyBtn.disabled = !this.checked;
+      if (errorMsg) errorMsg.textContent = '';
+    });
+  }
 
-  verifyBtn?.addEventListener('click', verificarCaptcha);
+  if (verifyBtn) {
+    verifyBtn.addEventListener('click', verificarCaptcha);
+  }
 }
 
 function verificarCaptcha() {
@@ -59,62 +98,90 @@ function verificarCaptcha() {
   const errorEl = document.getElementById('captcha-error');
   const captchaModal = document.getElementById('captcha-modal');
 
-  if (!checkbox?.checked) {
+  if (!checkbox || !checkbox.checked) {
     if (errorEl) errorEl.textContent = 'Por favor, marque "Não sou um robô" para continuar.';
     return false;
   }
 
+  // CAPTCHA verificado com sucesso
   captchaVerificado = true;
   if (captchaModal) captchaModal.style.display = 'none';
-  if (typeof window.onCaptchaSuccess === 'function') window.onCaptchaSuccess();
+  
+  if (typeof window.onCaptchaSuccess === 'function') {
+    window.onCaptchaSuccess();
+  }
+  
   return true;
 }
 
 function showCaptcha() {
-  const modal = document.getElementById('captcha-modal');
-  const checkbox = document.getElementById('not-robot-checkbox');
-  const error = document.getElementById('captcha-error');
-  const btn = document.getElementById('btn-verify');
-  if (modal) modal.style.display = 'flex';
-  if (checkbox) checkbox.checked = false;
-  if (error) error.textContent = '';
-  if (btn) btn.disabled = true;
+  const captchaModal = document.getElementById('captcha-modal');
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  const errorMsg = document.getElementById('captcha-error');
+  const verifyBtn = document.getElementById('btn-verify');
+
+  if (captchaModal) captchaModal.style.display = 'flex';
+  if (robotCheckbox) robotCheckbox.checked = false;
+  if (errorMsg) errorMsg.textContent = '';
+  if (verifyBtn) verifyBtn.disabled = true;
 }
 
+function isCaptchaVerified() {
+  return captchaVerificado;
+}
+
+function resetCaptcha() {
+  captchaVerificado = false;
+  const robotCheckbox = document.getElementById('not-robot-checkbox');
+  if (robotCheckbox) robotCheckbox.checked = false;
+}
+
+// Funções de cookies
 function verificarConsentimentoCookies() {
-  const consent = localStorage.getItem("cookieConsent");
-  const banner = document.getElementById("cookie-banner");
-  if (!consent && banner) banner.style.display = "block";
+  const consentimento = localStorage.getItem("cookieConsent");
+  const cookieBanner = document.getElementById("cookie-banner");
+  
+  if (!consentimento && cookieBanner) {
+    cookieBanner.style.display = "block";
+  }
 }
 
 function aceitarCookies() {
   localStorage.setItem("cookieConsent", "aceito");
-  document.getElementById("cookie-banner")?.style.display = "none";
+  const cookieBanner = document.getElementById("cookie-banner");
+  if (cookieBanner) cookieBanner.style.display = "none";
 }
 
 function rejeitarCookies() {
   localStorage.setItem("cookieConsent", "rejeitado");
-  document.getElementById("cookie-banner")?.style.display = "none";
+  const cookieBanner = document.getElementById("cookie-banner");
+  if (cookieBanner) cookieBanner.style.display = "none";
 }
 
+// Funções de cálculo e formatação
 function calculateSubtotals() {
   let grandTotal = 0;
+
   document.querySelectorAll('tbody tr').forEach(row => {
     if (row.querySelector('.category-header') || row.querySelector('td[colspan="5"]')) return;
+
     let rowTotal = 0;
-    row.querySelectorAll('.qty-input').forEach(input => {
+    const inputs = row.querySelectorAll('.qty-input');
+
+    inputs.forEach(input => {
       const quantity = parseInt(input.value) || 0;
       const price = parseFloat(input.dataset.price) || 0;
       rowTotal += quantity * price;
     });
+
     const subtotalCell = row.querySelector('.subtotal');
     if (subtotalCell) {
       subtotalCell.textContent = formatCurrency(rowTotal);
       subtotalCell.style.transition = 'background-color 0.3s';
       subtotalCell.style.backgroundColor = '#f0f7ff';
       setTimeout(() => subtotalCell.style.backgroundColor = '', 500);
+      grandTotal += rowTotal;
     }
-    grandTotal += rowTotal;
   });
 
   const totalElement = document.getElementById('total');
@@ -124,23 +191,34 @@ function calculateSubtotals() {
     totalElement.style.backgroundColor = '#f0f7ff';
     setTimeout(() => totalElement.style.backgroundColor = '', 500);
   }
+
   return grandTotal;
 }
 
 function formatCurrency(value) {
-  return 'R$ ' + value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+,)/g, '$1.');
+  return 'R$ ' + value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+\,)/g, '$1.');
 }
 
+// Funções de UI
 function showToast(message) {
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) existingToast.remove();
+
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = message;
-  Object.assign(toast.style, {
-    position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
-    backgroundColor: 'rgba(48, 90, 163, 0.9)', color: 'white', padding: '10px 20px',
-    borderRadius: '4px', zIndex: '1000', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
-  });
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.left = '50%';
+  toast.style.transform = 'translateX(-50%)';
+  toast.style.backgroundColor = 'rgba(48, 90, 163, 0.9)';
+  toast.style.color = 'white';
+  toast.style.padding = '10px 20px';
+  toast.style.borderRadius = '4px';
+  toast.style.zIndex = '1000';
+  toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
   document.body.appendChild(toast);
+  
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity 0.5s ease';
@@ -150,10 +228,10 @@ function showToast(message) {
 
 function toggleLoading(show) {
   const overlay = document.getElementById('loading-overlay');
-  if (overlay) overlay.classList.toggle('visible', show);
+  if (overlay) {
+    overlay.classList.toggle('visible', show);
+  }
 }
-
-// A função generateAndSharePDF e demais trechos finais continuam no próximo bloco...
 
 // Função principal para gerar e compartilhar PDF
 function generateAndSharePDF() {
@@ -178,7 +256,7 @@ function generateAndSharePDF() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 2)];
+    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
     // Configuração do PDF
     const opt = {
@@ -217,18 +295,22 @@ function generateAndSharePDF() {
 
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
-    // Download do PDF
-const a = document.createElement('a');
-a.href = pdfUrl;
-a.download = opt.filename;
-a.style.display = 'none';
-document.body.appendChild(a);
-a.click();
+      // Download do PDF
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = opt.filename;
+      document.body.appendChild(a);
+      a.click();
 
-// Finaliza o carregamento
-toggleLoading(false);
+      toggleLoading(false);
 
-
+      setTimeout(() => {
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = opt.filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
 
     // Espera mais 5 segundos e abre WhatsApp
     setTimeout(() => {
@@ -290,7 +372,7 @@ const congregationsByGroup = {
     grupo16: ["ALTO REFÚGIO", "SILOÉ", "MARANATA", "MANANCIAL"],
     grupo17: ["BETÂNIA", "SICAR", "POÇO DE JACÓ" ],
     grupo18: ["MONTE TABOR", "JOPE", "MONTE CARMELO"],
-    grupo19: ["REVELAÇÃO", "NOVO HORIZONTE", "ORVALHO DE HREMOM", "MONTE MORIÁ"],
+    grupo19: ["REVELAÇÃO", "NOVO HORIZONTE", "ORVALHO DE HERMOM", "MONTE MORIÁ"],
     grupo20: ["ELO DA SALVAÇÃO", "NOVA BETEL", "CESAREIA", "HEBROM"]
 
 
