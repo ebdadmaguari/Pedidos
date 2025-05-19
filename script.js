@@ -39,7 +39,7 @@ function setupTrimester() {
   const month = now.getMonth();
   const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
   const trimesterElement = document.getElementById('trimester');
-  
+
   if (trimesterElement) {
     trimesterElement.textContent = `${trimester} TRIMESTRE ${year}`;
   }
@@ -106,11 +106,11 @@ function verificarCaptcha() {
   // CAPTCHA verificado com sucesso
   captchaVerificado = true;
   if (captchaModal) captchaModal.style.display = 'none';
-  
+
   if (typeof window.onCaptchaSuccess === 'function') {
     window.onCaptchaSuccess();
   }
-  
+
   return true;
 }
 
@@ -140,7 +140,7 @@ function resetCaptcha() {
 function verificarConsentimentoCookies() {
   const consentimento = localStorage.getItem("cookieConsent");
   const cookieBanner = document.getElementById("cookie-banner");
-  
+
   if (!consentimento && cookieBanner) {
     cookieBanner.style.display = "block";
   }
@@ -218,7 +218,7 @@ function showToast(message) {
   toast.style.zIndex = '1000';
   toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity 0.5s ease';
@@ -304,6 +304,7 @@ function generateAndSharePDF() {
 
       toggleLoading(false);
 
+      // Redirecionamento para WhatsApp após download
       setTimeout(() => {
     const a = document.createElement('a');
     a.href = pdfUrl;
@@ -319,7 +320,7 @@ function generateAndSharePDF() {
       URL.revokeObjectURL(pdfUrl);
       buttons.forEach(btn => btn.style.display = '');
       toggleLoading(false);
-    }, 5000);
+    }, 3000);
 
   }, 1000);
     }).catch(err => {
