@@ -503,6 +503,32 @@ label[for="not-robot-checkbox"] {
 #btn-verify:not(:disabled):hover {
   background-color: #155ab6;
 }
+.admin-link {
+  width:200px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #0162c4;
+  padding: 4px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.admin-link i {
+  font-size: 16px;
+}
+
+.admin-link:hover {
+  background-color: #34495e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
 
 
 
