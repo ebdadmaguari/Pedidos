@@ -295,6 +295,7 @@ function generateAndSharePDF() {
 
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
+      // Download do PDF
       // Cria link para download e abre WhatsApp após 1 segundo
       const a = document.createElement('a');
       a.href = pdfUrl;
@@ -303,8 +304,26 @@ function generateAndSharePDF() {
       document.body.appendChild(a);
       a.click();
 
+      toggleLoading(false);
+
+      // Redirecionamento para WhatsApp após download
       // Abre WhatsApp após 1 segundo
       setTimeout(() => {
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = opt.filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+
+    // Espera mais 5 segundos e abre WhatsApp
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank');
+      document.body.removeChild(a);
+      URL.revokeObjectURL(pdfUrl);
+      buttons.forEach(btn => btn.style.display = '');
+      toggleLoading(false);
+    }, 3000);
         window.open(whatsappUrl, '_blank');
         document.body.removeChild(a);
         URL.revokeObjectURL(pdfUrl);
@@ -312,6 +331,7 @@ function generateAndSharePDF() {
         toggleLoading(false);
       }, 1000);
 
+  }, 1000);
     }).catch(err => {
       console.error('Erro ao gerar PDF:', err);
       toggleLoading(false);
@@ -389,4 +409,3 @@ const congregationsByGroup = {
       congregationSelect.disabled = true;
     }
   }
-
