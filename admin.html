@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área Administrativa - Pedidos de Revistas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/AlertifyJS/1.13.1/css/alertify.min.css" />
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --danger-color: #e74c3c;
+      --success-color: #2ecc71;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px 0;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+      margin: 0;
+      text-align: center;
+    }
+    
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: rgba(0,0,0,0.7);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .auth-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #27ae60;
+    }
+    
+    .filter-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .filter-container select, .filter-container input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-width: 200px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background-color: var(--primary-color);
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .actions-cell {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .pdf-container {
+      display: none;
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .pdf-viewer {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .logout-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div id="auth-modal" class="auth-container" style="display: none;">
+    <div class="auth-box">
+      <h2><i class="fas fa-lock"></i> Acesso Administrativo</h2>
+      <div class="form-group">
+        <label for="admin-username">Usuário</label>
+        <input type="text" id="admin-username" placeholder="Digite seu usuário">
+      </div>
+      <div class="form-group">
+        <label for="admin-password">Senha</label>
+        <input type="password" id="admin-password" placeholder="Digite sua senha">
+      </div>
+      <button id="login-btn" class="btn btn-primary" style="width: 100%;">
+        <i class="fas fa-sign-in-alt"></i> Entrar
+      </button>
+      <p id="login-error" style="color: red; text-align: center; margin-top: 15px;"></p>
+    </div>
+  </div>
+
+  <div id="admin-content" style="display: none;">
+    <button id="logout-btn" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Sair
+    </button>
+    
+    <header>
+      <div class="container">
+        <h1><i class="fas fa-tasks"></i> Painel de Pedidos de Revistas</h1>
+      </div>
+    </header>
+    
+    <div class="container">
+      <div class="filter-container">
+        <select id="filter-group">
+          <option value="">Todos os Grupos</option>
+          <option value="grupo1">Grupo 1</option>
+          <!-- Adicione todos os grupos -->
+        </select>
+        
+        <select id="filter-congregation">
+          <option value="">Todas as Congregações</option>
+        </select>
+        
+        <select id="filter-trimester">
+          <option value="">Todos os Trimestres</option>
+          <option value="1">1º Trimestre</option>
+          <option value="2">2º Trimestre</option>
+          <option value="3">3º Trimestre</option>
+          <option value="4">4º Trimestre</option>
+        </select>
+        
+        <input type="text" id="filter-coordinator" placeholder="Filtrar por coordenador">
+        
+        <button id="filter-btn" class="btn btn-primary">
+          <i class="fas fa-filter"></i> Filtrar
+        </button>
+        
+        <button id="reset-filters-btn" class="btn">
+          <i class="fas fa-undo"></i> Limpar
+        </button>
+      </div>
+      
+      <div id="orders-container">
+        <table id="orders-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Grupo</th>
+              <th>Congregação</th>
+              <th>Coordenador</th>
+              <th>Trimestre</th>
+              <th>Total</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body">
+            <!-- Os pedidos serão carregados aqui -->
+          </tbody>
+        </table>
+        
+        <div id="loading" class="loading">
+          <i class="fas fa-spinner fa-spin fa-2x"></i>
+          <p>Carregando pedidos...</p>
+        </div>
+        
+        <div id="no-results" class="no-results" style="display: none;">
+          <i class="fas fa-info-circle fa-2x"></i>
+          <p>Nenhum pedido encontrado com os filtros selecionados</p>
+        </div>
+      </div>
+      
+      <div id="pdf-container" class="pdf-container">
+        <button id="close-pdf-btn" class="btn btn-danger">
+          <i class="fas fa-times"></i> Fechar PDF
+        </button>
+        <iframe id="pdf-viewer" class="pdf-viewer" src=""></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/AlertifyJS/1.13.1/alertify.min.js"></script>
+  <script>
+    // Credenciais de acesso (em produção, usar autenticação segura)
+    const ADMIN_CREDENTIALS = {
+      username: "admin",
+      password: "EBD@2023"
+    };
+    
+    // Verificar autenticação ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+      
+      if (isAuthenticated) {
+        showAdminContent();
+        loadOrders();
+      } else {
+        showAuthModal();
+      }
+    });
+    
+    // Mostrar modal de autenticação
+    function showAuthModal() {
+      document.getElementById('auth-modal').style.display = 'flex';
+      document.getElementById('admin-content').style.display = 'none';
+    }
+    
+    // Mostrar conteúdo administrativo
+    function showAdminContent() {
+      document.getElementById('auth-modal').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'block';
+    }
+    
+    // Evento de login
+    document.getElementById('login-btn').addEventListener('click', function() {
+      const username = document.getElementById('admin-username').value;
+      const password = document.getElementById('admin-password').value;
+      
+      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        localStorage.setItem('adminAuthenticated', 'true');
+        showAdminContent();
+        loadOrders();
+      } else {
+        document.getElementById('login-error').textContent = 'Usuário ou senha incorretos';
+      }
+    });
+    
+    // Evento de logout
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      localStorage.removeItem('adminAuthenticated');
+      showAuthModal();
+    });
+    
+    // Carregar pedidos do localStorage
+    function loadOrders() {
+      const tbody = document.getElementById('orders-body');
+      const loading = document.getElementById('loading');
+      const noResults = document.getElementById('no-results');
+      
+      tbody.innerHTML = '';
+      loading.style.display = 'block';
+      noResults.style.display = 'none';
+      
+      // Simular carregamento assíncrono
+      setTimeout(() => {
+        const orders = JSON.parse(localStorage.getItem('revistaOrders')) || [];
+        
+        if (orders.length === 0) {
+          noResults.style.display = 'block';
+        } else {
+          orders.forEach(order => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${formatDate(order.timestamp)}</td>
+              <td>${order.group || 'Não informado'}</td>
+              <td>${order.congregation || 'Não informado'}</td>
+              <td>${order.coordinator || 'Não informado'}</td>
+              <td>${order.trimester || 'Não informado'}</td>
+              <td>R$ ${order.totalAmount?.toFixed(2).replace('.', ',') || '0,00'}</td>
+              <td class="actions-cell">
+                <button class="btn btn-primary" onclick="viewOrderDetails('${order.id}')">
+                  <i class="fas fa-info-circle"></i>
+                </button>
+                <button class="btn btn-success" onclick="viewPDF('${order.id}')">
+                  <i class="fas fa-file-pdf"></i>
+                </button>
+                <button class="btn btn-danger" onclick="deleteOrder('${order.id}')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+        
+        loading.style.display = 'none';
+      }, 800);
+    }
+    
+    // Visualizar detalhes do pedido
+    function viewOrderDetails(orderId) {
+      const orders = JSON.parse(localStorage.getItem('revistaOrders')) || [];
+      const order = orders.find(o => o.id === orderId);
+      
+      if (!order) {
+        alertify.error('Pedido não encontrado');
+        return;
+      }
+      
+      let detailsHTML = `
+        <h3>Detalhes do Pedido</h3>
+        <p><strong>Data:</strong> ${formatDate(order.timestamp, true)}</p>
+        <p><strong>Grupo:</strong> ${order.group || 'Não informado'}</p>
+        <p><strong>Congregação:</strong> ${order.congregation || 'Não informado'}</p>
+        <p><strong>Coordenador:</strong> ${order.coordinator || 'Não informado'}</p>
+        <p><strong>Telefone:</strong> ${order.phone || 'Não informado'}</p>
+        <p><strong>Trimestre:</strong> ${order.trimester || 'Não informado'}</p>
+        <p><strong>Total:</strong> R$ ${order.totalAmount?.toFixed(2).replace('.', ',') || '0,00'}</p>
+        
+        <h4>Itens do Pedido:</h4>
+        <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+          <thead>
+            <tr style="background-color:#f2f2f2;">
+              <th style="padding:8px; border:1px solid #ddd;">Material</th>
+              <th style="padding:8px; border:1px solid #ddd;">Alunos</th>
+              <th style="padding:8px; border:1px solid #ddd;">Professores</th>
+              <th style="padding:8px; border:1px solid #ddd;">Kits</th>
+              <th style="padding:8px; border:1px solid #ddd;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      order.details?.forEach(item => {
+        detailsHTML += `
+          <tr>
+            <td style="padding:8px; border:1px solid #ddd;">${item.material}</td>
+            <td style="padding:8px; border:1px solid #ddd; text-align:center;">${item.aluno}</td>
+            <td style="padding:8px; border:1px solid #ddd; text-align:center;">${item.professor}</td>
+            <td style="padding:8px; border:1px solid #ddd; text-align:center;">${item.kit}</td>
+            <td style="padding:8px; border:1px solid #ddd; text-align:right;">${item.subtotal}</td>
+          </tr>
+        `;
+      });
+      
+      detailsHTML += `</tbody></table>`;
+      
+      alertify.alert('Detalhes do Pedido', detailsHTML, function(){
+        alertify.message('OK');
+      });
+    }
+    
+    // Visualizar PDF
+    function viewPDF(orderId) {
+      const orders = JSON.parse(localStorage.getItem('revistaOrders')) || [];
+      const order = orders.find(o => o.id === orderId);
+      
+      if (order && order.pdfUrl) {
+        document.getElementById('orders-table').style.display = 'none';
+        document.getElementById('pdf-container').style.display = 'block';
+        document.getElementById('pdf-viewer').src = order.pdfUrl;
+      } else {
+        alertify.error('PDF não disponível para este pedido');
+      }
+    }
+    
+    // Fechar visualização de PDF
+    document.getElementById('close-pdf-btn').addEventListener('click', function() {
+      document.getElementById('orders-table').style.display = 'table';
+      document.getElementById('pdf-container').style.display = 'none';
+      document.getElementById('pdf-viewer').src = '';
+    });
+    
+    // Excluir pedido
+    function deleteOrder(orderId) {
+      alertify.confirm('Confirmar Exclusão', 
+        'Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita.',
+        function() {
+          const orders = JSON.parse(localStorage.getItem('revistaOrders')) || [];
+          const updatedOrders = orders.filter(o => o.id !== orderId);
+          localStorage.setItem('revistaOrders', JSON.stringify(updatedOrders));
+          loadOrders();
+          alertify.success('Pedido excluído com sucesso');
+        },
+        function() {
+          alertify.message('Exclusão cancelada');
+        }
+      );
+    }
+    
+    // Função auxiliar para formatar data
+    function formatDate(isoString, withTime = false) {
+      const date = new Date(isoString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      
+      if (withTime) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day}/${month}/${year} às ${hours}:${minutes}`;
+      }
+      
+      return `${day}/${month}/${year}`;
+    }
+    
+    // Filtros
+    document.getElementById('filter-btn').addEventListener('click', function() {
+      const groupFilter = document.getElementById('filter-group').value.toLowerCase();
+      const congregationFilter = document.getElementById('filter-congregation').value.toLowerCase();
+      const trimesterFilter = document.getElementById('filter-trimester').value;
+      const coordinatorFilter = document.getElementById('filter-coordinator').value.toLowerCase();
+      
+      const rows = document.querySelectorAll('#orders-body tr');
+      let hasResults = false;
+      
+      rows.forEach(row => {
+        const group = row.cells[1].textContent.toLowerCase();
+        const congregation = row.cells[2].textContent.toLowerCase();
+        const trimester = row.cells[4].textContent.toLowerCase();
+        const coordinator = row.cells[3].textContent.toLowerCase();
+        
+        const matchesGroup = !groupFilter || group.includes(groupFilter);
+        const matchesCongregation = !congregationFilter || congregation.includes(congregationFilter);
+        const matchesTrimester = !trimesterFilter || trimester.includes(trimesterFilter);
+        const matchesCoordinator = !coordinatorFilter || coordinator.includes(coordinatorFilter);
+        
+        if (matchesGroup && matchesCongregation && matchesTrimester && matchesCoordinator) {
+          row.style.display = '';
+          hasResults = true;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      
+      document.getElementById('no-results').style.display = hasResults ? 'none' : 'block';
+    });
+    
+    // Resetar filtros
+    document.getElementById('reset-filters-btn').addEventListener('click', function() {
+      document.getElementById('filter-group').value = '';
+      document.getElementById('filter-congregation').value = '';
+      document.getElementById('filter-trimester').value = '';
+      document.getElementById('filter-coordinator').value = '';
+      
+      const rows = document.querySelectorAll('#orders-body tr');
+      rows.forEach(row => {
+        row.style.display = '';
+      });
+      
+      document.getElementById('no-results').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
