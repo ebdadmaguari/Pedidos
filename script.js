@@ -274,6 +274,7 @@ function generateAndSharePDF() {
         orientation: 'portrait' 
       }
     };
+    
 
     // Dados do formulário
     const congregation = document.getElementById('congregation').value || 'Não informado';
@@ -292,7 +293,68 @@ function generateAndSharePDF() {
         `*Telefone:* ${phone}\n` +
         `*Trimestre:* ${trimester} Trimestre ${year}\n` +
         `Pedido completo em anexo.`;
+        const formData = collectFormData();
+    
+    // 2. Salvar no localStorage
+ // Função principal async
+async function enviarPedido() {
+  if (!verificarCaptcha()) {
+    mostrarCaptcha();
+    return;
+  }
 
+  try {
+    mostrarCarregamento(true);
+    
+    // Coletar dados
+    const dadosPedido = {
+      congregacao: document.getElementById('congregation').value,
+      coordenador: document.getElementById('coordinator').value,
+      telefone: document.getElementById('phone').value,
+      itens: coletarItens(),
+      total: calcularTotal(),
+      trimestre: document.getElementById('trimester').textContent.trim(),
+      data: new Date().toISOString()
+    };
+
+    // Salvar localmente (sem await pois não é assíncrono)
+    salvarLocalmente(dadosPedido);
+    
+    // Gerar PDF (operação assíncrona)
+    const pdf = await gerarPDF(dadosPedido);
+    
+    // Compartilhar
+    compartilharWhatsApp(dadosPedido, pdf);
+    
+    mostrarMensagemSucesso('Pedido registrado!');
+    
+  } catch (erro) {
+    console.error('Erro:', erro);
+    mostrarErro('Falha no processamento');
+  } finally {
+    mostrarCarregamento(false);
+  }
+}
+
+// Função de salvamento síncrona
+function salvarLocalmente(pedido) {
+  try {
+    const pedidos = JSON.parse(localStorage.getItem('pedidosRevistas') || '[]');
+    pedidos.unshift({...pedido, id: Date.now()});
+    localStorage.setItem('pedidosRevistas', JSON.stringify(pedidos));
+  } catch (e) {
+    console.error('Erro ao salvar localmente:', e);
+    throw new Error('Falha no armazenamento local');
+  }
+}
+
+// Event listener corrigido
+document.getElementById('btn-enviar').addEventListener('click', function() {
+  // Envolvemos em uma IIFE async para poder usar await
+  (async () => {
+    await enviarPedido();
+  })().catch(console.error);
+});
       const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
 
       // Cria link para download e abre WhatsApp após 1 segundo
@@ -358,7 +420,7 @@ const congregationsByGroup = {
     grupo12: ["BRILHO CELESTE", "RAIZ DE JESSÉ", "JASPE", "MAANAIM"],
     grupo13: ["NOVA CANAÃ","MONTE SIÃO", "MONTE GERESIM" ],
     grupo14: ["SELO DA PROMESSA", "NINIVE", "SHEKINÁ", "MONTE HOREBE"],
-    grupo15: ["SALVADOR", "BÁLSAMO DE GILEADE", "LÍRIO DOS VALES", "EL ELYON"],
+    grupo15: ["SALVADOR", "BÁLSAMO DE GILEADE", "LÍRIO DOS VALES", "EL ELYON" ],
     grupo16: ["ALTO REFÚGIO", "SILOÉ", "MARANATA", "MANANCIAL"],
     grupo17: ["BETÂNIA", "SICAR", "POÇO DE JACÓ" ],
     grupo18: ["MONTE TABOR", "JOPE", "MONTE CARMELO"],
@@ -389,7 +451,7 @@ const congregationsByGroup = {
       congregationSelect.disabled = true;
     }
   }
-function salvarPedido(pedido) {
+  function salvarPedido(pedido) {
   const pedidosSalvos = JSON.parse(localStorage.getItem("revistaOrders")) || [];
   pedidosSalvos.push(pedido);
   localStorage.setItem("revistaOrders", JSON.stringify(pedidosSalvos));
