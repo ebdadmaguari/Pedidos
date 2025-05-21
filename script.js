@@ -295,57 +295,52 @@ function generateAndSharePDF() {
         `Pedido completo em anexo.`;
         const formData = collectFormData();
     
-    // 2. Salvar no localStorage
- // Função principal async
-async function enviarPedido() {
-  if (!verificarCaptcha()) {
-    mostrarCaptcha();
-    return;
-  }
+ 
 
-  try {
-    mostrarCarregamento(true);
-    
-    // Coletar dados
-    const dadosPedido = {
-      congregacao: document.getElementById('congregation').value,
-      coordenador: document.getElementById('coordinator').value,
-      telefone: document.getElementById('phone').value,
-      itens: coletarItens(),
-      total: calcularTotal(),
-      trimestre: document.getElementById('trimester').textContent.trim(),
-      data: new Date().toISOString()
-    };
+// Modifique a função generateAndSharePDF para salvar o pedido
+async function generateAndSharePDF() {
+    if (!isCaptchaVerified()) {
+        showCaptcha();
+        return;
+    }
 
-    // Salvar localmente (sem await pois não é assíncrono)
-    salvarLocalmente(dadosPedido);
+    const formData = collectFormData();
     
-    // Gerar PDF (operação assíncrona)
-    const pdf = await gerarPDF(dadosPedido);
-    
-    // Compartilhar
-    compartilharWhatsApp(dadosPedido, pdf);
-    
-    mostrarMensagemSucesso('Pedido registrado!');
-    
-  } catch (erro) {
-    console.error('Erro:', erro);
-    mostrarErro('Falha no processamento');
-  } finally {
-    mostrarCarregamento(false);
-  }
-}
+    // Verifica se há itens no pedido
+    const numericTotal = parseFloat(formData.total.replace(/[^\d,]/g, '').replace(',', '.'));
+    if (isNaN(numericTotal) || numericTotal === 0) {
+        showToast('Adicione pelo menos um item ao pedido!');
+        return;
+    }
 
-// Função de salvamento síncrona
-function salvarLocalmente(pedido) {
-  try {
-    const pedidos = JSON.parse(localStorage.getItem('pedidosRevistas') || '[]');
-    pedidos.unshift({...pedido, id: Date.now()});
-    localStorage.setItem('pedidosRevistas', JSON.stringify(pedidos));
-  } catch (e) {
-    console.error('Erro ao salvar localmente:', e);
-    throw new Error('Falha no armazenamento local');
-  }
+    try {
+        toggleLoading(true);
+        
+        // 1. Salvar no localStorage
+        const pedidoSalvo = salvarPedido({
+            group: document.getElementById('group').value,
+            congregation: formData.congregation,
+            coordinator: formData.coordinator,
+            phone: formData.phone,
+            items: formData.items,
+            total: formData.total,
+            trimester: document.getElementById('trimester').textContent.trim()
+        });
+        
+        // 2. Gerar PDF
+        const pdfBlob = await generatePDF(formData);
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        // 3. Compartilhar via WhatsApp
+        await shareViaWhatsApp(formData, pdfUrl);
+        
+        showToast('Pedido enviado com sucesso!');
+    } catch (error) {
+        console.error('Erro no processo:', error);
+        showToast('Erro ao enviar pedido. Tente novamente.');
+    } finally {
+        toggleLoading(false);
+    }
 }
 
 // Event listener corrigido
