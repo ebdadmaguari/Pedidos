@@ -389,3 +389,9 @@ const congregationsByGroup = {
       congregationSelect.disabled = true;
     }
   }
+function salvarPedido(pedido) {
+  const pedidosSalvos = JSON.parse(localStorage.getItem("revistaOrders")) || [];
+  pedidosSalvos.push(pedido);
+  localStorage.setItem("revistaOrders", JSON.stringify(pedidosSalvos));
+}
+
