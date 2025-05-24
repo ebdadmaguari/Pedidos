@@ -237,7 +237,7 @@ function toggleLoading(show) {
 function generateAndSharePDF() {
   showCaptcha();
 
-  window.onCaptchaSuccess = function () {
+  window.onCaptchaSuccess = function() {
     calculateSubtotals();
 
     const buttons = document.querySelectorAll('.no-print');
@@ -258,54 +258,34 @@ function generateAndSharePDF() {
     const month = now.getMonth();
     const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
+    // Configuração do PDF
     const opt = {
       margin: 0,
       filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
       image: { type: 'jpeg', quality: 1 },
-      html2canvas: {
+      html2canvas: { 
         scale: 2,
         useCORS: true,
         letterRendering: true
       },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait' 
       }
     };
 
+    // Dados do formulário
     const congregation = document.getElementById('congregation').value || 'Não informado';
     const coordinator = document.getElementById('coordinator').value || 'Não informado';
     const phone = document.getElementById('phone').value || 'Não informado';
 
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+    // Geração do PDF
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      // 👉 Salva o PDF temporariamente com o pedido
-      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
-      const pedido = {
-        timestamp: Date.now(),
-        congregacao: congregation,
-        coordenador: coordinator,
-        telefone: phone,
-        trimestre: `${trimester} Trimestre ${year}`,
-        pdfUrl: pdfUrl, // ⚠️ URL temporária
-        itens: obterItensDoFormulario() // ← você precisa adaptar com seus dados reais
-      };
-
-      pedidos.push(pedido);
-      localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-      // 🔽 Dispara o download
-      const a = document.createElement('a');
-      a.href = pdfUrl;
-      a.download = opt.filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-
-      // 🔁 WhatsApp
+      // Mensagem para WhatsApp
       const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
         `*Congregação:* ${congregation}\n` +
         `*Coordenador:* ${coordinator}\n` +
@@ -313,12 +293,25 @@ function generateAndSharePDF() {
         `*Trimestre:* ${trimester} Trimestre ${year}\n` +
         `Pedido completo em anexo.`;
 
+      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
+
+      // Cria link para download e abre WhatsApp após 1 segundo
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = opt.filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+
+      // Abre WhatsApp após 1 segundo
       setTimeout(() => {
-        window.open(`https://wa.me/5591981918866?text=${encodeURIComponent(message)}`, '_blank');
+        window.open(whatsappUrl, '_blank');
         document.body.removeChild(a);
+        URL.revokeObjectURL(pdfUrl);
         buttons.forEach(btn => btn.style.display = '');
         toggleLoading(false);
       }, 1000);
+
     }).catch(err => {
       console.error('Erro ao gerar PDF:', err);
       toggleLoading(false);
