@@ -444,5 +444,36 @@ const congregationsByGroup = {
       congregationSelect.disabled = true;
     }
   }
- 
+ function salvarPedido() {
+  const itens = [];
+  document.querySelectorAll("tbody tr").forEach(tr => {
+    const inputs = tr.querySelectorAll("input");
+    if (inputs.length > 0) {
+      const item = {
+        material: tr.children[1]?.innerText.trim(),
+        aluno: inputs[0]?.value || 0,
+        professor: inputs[1]?.value || 0,
+        kit: inputs[2]?.value || 0,
+      };
+      itens.push(item);
+    }
+  });
+
+  const dados = {
+    grupo: document.getElementById('group').value,
+    congregacao: document.getElementById('congregation').value,
+    coordenador: document.getElementById('coordinator').value,
+    telefone: document.getElementById('phone').value,
+    itens: itens,
+    data: new Date().toLocaleString()
+  };
+
+  // pega pedidos antigos
+  const pedidosAntigos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+  pedidosAntigos.push(dados);
+  localStorage.setItem("pedidos", JSON.stringify(pedidosAntigos));
+
+  alert("Pedido salvo localmente!");
+}
+
 
