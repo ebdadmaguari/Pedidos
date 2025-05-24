@@ -1,293 +1,842 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área Administrativa - Pedidos de Revistas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            position: sticky;
-            top: 0;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .actions {
-            display: flex;
-            gap: 5px;
-        }
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-        }
-        .btn-view {
-            background-color: #4CAF50;
-        }
-        .btn-delete {
-            background-color: #f44336;
-        }
-        .btn-print {
-            background-color: #2196F3;
-        }
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        input[type="text"], select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .logout-btn {
-            float: right;
-            margin-bottom: 20px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Área administrativa para gerenciamento de pedidos de materiais da EBD">
+  <title>Área Administrativa - EBD</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --danger-color: #e74c3c;
+      --danger-hover: #c0392b;
+      --success-color: #2ecc71;
+      --warning-color: #f39c12;
+      --text-color: #333;
+      --light-bg: #f8f9fa;
+      --card-bg: #fff;
+      --border-color: #dee2e6;
+      --item-bg: #f8f9fa;
+      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    /* Estilos para o cabeçalho */
+    .page-header {
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-content h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-icon {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-icon:hover {
+      background: rgba(255,255,255,0.2);
+      transform: rotate(180deg);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .user-name {
+      font-size: 0.9rem;
+    }
+
+    .header-subtitle p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* Estilos para o dashboard */
+    .dashboard-container {
+      padding: 1.5rem 2rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: white;
+    }
+
+    .card-primary .card-icon { background: #3498db; }
+    .card-success .card-icon { background: #2ecc71; }
+    .card-warning .card-icon { background: #f39c12; }
+    .card-info .card-icon { background: #9b59b6; }
+
+    .card-content {
+      flex: 1;
+    }
+
+    .card-content h3 {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin: 0 0 0.25rem 0;
+      font-weight: 500;
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2c3e50;
+      display: block;
+    }
+
+    .card-trend {
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: #95a5a6;
+    }
+
+    /* Estilos para a área de conteúdo */
+    .content-wrapper {
+      padding: 0 2rem 2rem 2rem;
+    }
+
+    .main-content {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .content-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #95a5a6;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border 0.3s ease;
+    }
+
+    .search-box input:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Estilos para a tabela de pedidos */
+    .pedidos-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .pedidos-table th {
+      background-color: #f8f9fa;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #2c3e50;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .pedidos-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #dee2e6;
+      vertical-align: top;
+    }
+
+    .pedidos-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pedidos-table tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35em 0.65em;
+      font-size: 0.75em;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25rem;
+    }
+
+    .badge-primary {
+      background-color: var(--primary-color);
+    }
+
+    .badge-success {
+      background-color: var(--success-color);
+    }
+
+    .badge-warning {
+      background-color: var(--warning-color);
+    }
+
+    .btn {
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #27ae60;
+    }
+
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background-color: #e67e22;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #6c757d;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      color: #dee2e6;
+      margin-bottom: 1rem;
+    }
+
+    .material-details {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 0.25rem;
+      font-size: 0.85rem;
+    }
+
+    .material-details p {
+      margin: 0.25rem 0;
+    }
+
+    /* Estilos para o rodapé */
+    .page-footer {
+      background: #f8f9fa;
+      padding: 1rem 2rem;
+      border-top: 1px solid #eee;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-info p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .last-update {
+      font-size: 0.8rem;
+      color: #bdc3c7;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: #7f8c8d;
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: #3498db;
+    }
+
+    /* Responsividade */
+    @media (max-width: 992px) {
+      .pedidos-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .content-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-box {
+        min-width: 100%;
+      }
+      
+      .action-buttons {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .page-header, .dashboard-container, .content-wrapper {
+        padding: 1rem;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .footer-links {
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <button class="logout-btn" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Sair
+  <header class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-book-open"></i> Controle de Pedidos - EBD</h1>
+      <div class="header-actions">
+        <button id="refreshBtn" class="btn-icon" title="Atualizar lista">
+          <i class="fas fa-sync-alt"></i>
         </button>
-        <h1>Área Administrativa - Pedidos de Revistas</h1>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Buscar por congregação..." onkeyup="filterOrders()">
-            <select id="filterStatus" onchange="filterOrders()">
-                <option value="">Todos os status</option>
-                <option value="pendente">Pendente</option>
-                <option value="processando">Processando</option>
-                <option value="concluido">Concluído</option>
-            </select>
-            <button onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Exportar</button>
+        <div class="user-menu">
+          <span class="user-name">Admin</span>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </div>
+    </div>
+    <div class="header-subtitle">
+      <p>Gerencie os pedidos de materiais das congregações</p>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <div class="dashboard-container">
+      <div class="dashboard-grid">
+        <div class="dashboard-card card-primary">
+          <div class="card-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total de Pedidos</h3>
+            <span id="total-pedidos" class="card-value">0</span>
+            <span class="card-trend"><i class="fas fa-arrow-up"></i> </span>
+          </div>
         </div>
         
-        <div style="overflow-x:auto;">
-            <table id="ordersTable">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Grupo</th>
-                        <th>Congregação</th>
-                        <th>Coordenador</th>
-                        <th>Telefone</th>
-                        <th>Trimestre</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersBody">
-                    <!-- Os pedidos serão inseridos aqui via JavaScript -->
-                </tbody>
-            </table>
+        <div class="dashboard-card card-success">
+          <div class="card-icon">
+            <i class="fas fa-calendar-day"></i>
+          </div>
+          <div class="card-content">
+            <h3>Pedidos Hoje</h3>
+            <span id="pedidos-hoje" class="card-value">0</span>
+            <span class="card-trend"><i class="fas fa-arrow-up"></i> </span>
+          </div>
         </div>
+        
+        <div class="dashboard-card card-warning">
+          <div class="card-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="card-content">
+            <h3>Pendentes</h3>
+            <span id="pedidos-pendentes" class="card-value">0</span>
+            <span class="card-trend"><i class="fas fa-arrow-down"></i> </span>
+          </div>
+        </div>
+        
+        <div class="dashboard-card card-info">
+          <div class="card-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <div class="card-content">
+            <h3>Último Pedido</h3>
+            <span id="ultimo-pedido" class="card-value">-</span>
+            <span class="card-trend">Atualizado agora</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // Função para carregar os pedidos
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('pedidosRevistas')) || [];
-            const tbody = document.getElementById('ordersBody');
-            tbody.innerHTML = '';
-            
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhum pedido encontrado</td></tr>';
-                return;
-            }
-            
-            orders.forEach(order => {
-                const tr = document.createElement('tr');
-                const date = new Date(order.timestamp);
-                const formattedDate = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
-                
-                tr.innerHTML = `
-                    <td>${formattedDate}</td>
-                    <td>${order.group || 'Não informado'}</td>
-                    <td>${order.congregation || 'Não informado'}</td>
-                    <td>${order.coordinator || 'Não informado'}</td>
-                    <td>${order.phone || 'Não informado'}</td>
-                    <td>${order.trimester || 'Não informado'}</td>
-                    <td>${order.total || 'R$ 0,00'}</td>
-                    <td>
-                        <select onchange="updateStatus('${order.id}', this.value)" style="padding: 5px;">
-                            <option value="pendente" ${order.status === 'pendente' ? 'selected' : ''}>Pendente</option>
-                            <option value="processando" ${order.status === 'processando' ? 'selected' : ''}>Processando</option>
-                            <option value="concluido" ${order.status === 'concluido' ? 'selected' : ''}>Concluído</option>
-                        </select>
-                    </td>
-                    <td class="actions">
-                        <button class="btn btn-view" onclick="viewOrder('${order.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-print" onclick="printOrder('${order.id}')">
-                            <i class="fas fa-print"></i>
-                        </button>
-                        <button class="btn btn-delete" onclick="deleteOrder('${order.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+    <main class="main-content">
+      <div class="content-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar pedidos...">
+        </div>
+        <div class="action-buttons">
+          <button id="exportExcel" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Excel
+          </button>
+          <button id="exportPDF" class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+          <button id="limparPedidos" class="btn btn-warning">
+            <i class="fas fa-broom"></i> Limpar Tudo
+          </button>
+        </div>
+      </div>
+      
+      <div id="listaPedidos">
+        <table class="pedidos-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Grupo</th>
+              <th>Congregação</th>
+              <th>Coordenador</th>
+              <th>Telefone</th>
+              <th>Trimestre</th>
+              <th>Total</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="pedidosTableBody">
+            <!-- Conteúdo dinâmico será inserido aqui -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <footer class="page-footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>Sistema de Pedidos EBD v1.0</p>
+        <p class="last-update">Última atualização: <span id="lastUpdateTime">-</span></p>
+      </div>
+      <div class="footer-links">
+        <a href="#"><i class="fas fa-question-circle"></i> Ajuda</a>
+        <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+        <a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pedidosTableBody = document.getElementById("pedidosTableBody");
+      const limparBtn = document.getElementById("limparPedidos");
+      const exportExcelBtn = document.getElementById("exportExcel");
+      const exportPDFBtn = document.getElementById("exportPDF");
+      const refreshBtn = document.getElementById("refreshBtn");
+      const searchInput = document.getElementById("searchInput");
+      
+      // Carregar pedidos do localStorage
+      let pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      
+      // Atualizar dashboard
+      atualizarDashboard(pedidos);
+      
+      // Ordenar pedidos por data (mais recente primeiro)
+      pedidos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      if (pedidos.length === 0) {
+        pedidosTableBody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>Nenhum pedido encontrado.</p>
+                <p>Quando novos pedidos forem enviados, eles aparecerão aqui.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        limparBtn.disabled = true;
+        exportExcelBtn.disabled = true;
+        exportPDFBtn.disabled = true;
+      } else {
+        renderizarPedidos(pedidos);
+      }
+      
+      // Atualizar última atualização
+      document.getElementById('lastUpdateTime').textContent = formatarData(new Date().toISOString());
+      
+      // Event listeners
+      limparBtn.addEventListener('click', limparPedidos);
+      exportExcelBtn.addEventListener('click', () => exportarPedidos('excel'));
+      exportPDFBtn.addEventListener('click', () => exportarPedidos('pdf'));
+      refreshBtn.addEventListener('click', recarregarPedidos);
+      searchInput.addEventListener('input', filtrarPedidos);
+    });
+
+    function atualizarDashboard(pedidos) {
+      const hoje = new Date().toISOString().split('T')[0];
+      const pedidosHoje = pedidos.filter(p => p.timestamp && p.timestamp.includes(hoje)).length;
+      const ultimoPedido = pedidos.length > 0 ? formatarData(pedidos[0].timestamp) : '-';
+      
+      document.getElementById('total-pedidos').textContent = pedidos.length;
+      document.getElementById('pedidos-hoje').textContent = pedidosHoje;
+      document.getElementById('pedidos-pendentes').textContent = pedidos.filter(p => !p.entregue).length;
+      document.getElementById('ultimo-pedido').textContent = ultimoPedido;
+    }
+
+    function renderizarPedidos(pedidos) {
+      const pedidosTableBody = document.getElementById("pedidosTableBody");
+      pedidosTableBody.innerHTML = '';
+      
+      if (pedidos.length === 0) {
+        pedidosTableBody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>Nenhum pedido encontrado.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      pedidos.forEach((pedido, index) => {
+        const totalItens = pedido.itens ? pedido.itens.length : 0;
+        const trimestre = pedido.trimestre || 'Não informado';
+        
+        const row = document.createElement("tr");
+        
+        row.innerHTML = `
+          <td>${formatarData(pedido.timestamp)}</td>
+          <td>${pedido.grupo || '-'}</td>
+          <td>${pedido.congregacao || '-'}</td>
+          <td>${pedido.coordenador || '-'}</td>
+          <td><a href="tel:${pedido.telefone}">${pedido.telefone || '-'}</a></td>
+          <td>${trimestre}</td>
+          <td><span class="badge badge-primary">${totalItens} itens</span></td>
+          <td>
+            <button class="btn btn-primary btn-sm btn-detalhes" data-id="${index}">
+              <i class="fas fa-eye"></i> Detalhes
+            </button>
+            <button class="btn btn-danger btn-sm btn-excluir" data-id="${index}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        
+        pedidosTableBody.appendChild(row);
+      });
+      
+      // Adicionar event listeners para os botões
+      document.querySelectorAll('.btn-detalhes').forEach(btn => {
+        btn.addEventListener('click', mostrarDetalhesPedido);
+      });
+      
+      document.querySelectorAll('.btn-excluir').forEach(btn => {
+        btn.addEventListener('click', excluirPedido);
+      });
+    }
+
+    function mostrarDetalhesPedido(e) {
+  const pedidoId = e.target.closest('button').getAttribute('data-id');
+  const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+  const pedido = pedidos[pedidoId];
+
+  if (!pedido) return;
+
+  // Mostra os detalhes do pedido na interface...
+
+  if (pedido.pdfUrl) {
+    // Abre o PDF na nova aba
+    window.open(pedido.pdfUrl, '_blank');
+  } else {
+    showToast("PDF não disponível para este pedido.");
+  }
+}
+    function excluirPedido(e) {
+      const pedidoId = e.target.closest('button').getAttribute('data-id');
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      
+      if (confirm(`Tem certeza que deseja excluir este pedido?`)) {
+        pedidos.splice(pedidoId, 1);
+        localStorage.setItem("pedidos", JSON.stringify(pedidos));
+        recarregarPedidos();
+      }
+    }
+
+    function formatarData(dataString) {
+      if (!dataString) return 'Data não disponível';
+      
+      const options = { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      
+      try {
+        return new Date(dataString).toLocaleDateString('pt-BR', options);
+      } catch (e) {
+        return dataString; // Retorna o valor original se não puder ser formatado
+      }
+    }
+
+    function limparPedidos() {
+      if (confirm("Tem certeza que deseja apagar todos os pedidos salvos? Esta ação não pode ser desfeita.")) {
+        localStorage.removeItem("pedidos");
+        recarregarPedidos();
+        
+        // Feedback visual
+        const btn = document.getElementById("limparPedidos");
+        btn.innerHTML = '<i class="fas fa-check"></i> Limpeza concluída';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fas fa-broom"></i> Limpar Tudo';
+        }, 2000);
+      }
+    }
+
+    function exportarPedidos(format) {
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      
+      if (pedidos.length === 0) {
+        alert('Não há pedidos para exportar!');
+        return;
+      }
+      
+      if (format === 'excel') {
+        // Criar conteúdo CSV
+        let csvContent = "Data,Grupo,Congregação,Coordenador,Telefone,Trimestre,Material,Aluno,Professor,Kit\n";
+        
+        pedidos.forEach(pedido => {
+          const itens = pedido.itens || [];
+          if (itens.length === 0) {
+            csvContent += `"${pedido.timestamp}","${pedido.grupo}","${pedido.congregacao}","${pedido.coordenador}","${pedido.telefone}","${pedido.trimestre}","","","",""\n`;
+          } else {
+            itens.forEach(item => {
+              csvContent += `"${pedido.timestamp}","${pedido.grupo}","${pedido.congregacao}","${pedido.coordenador}","${pedido.telefone}","${pedido.trimestre}","${item.material}","${item.aluno}","${item.professor}","${item.kit}"\n`;
             });
-        }
+          }
+        });
         
-        // Função para filtrar os pedidos
-        function filterOrders() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const rows = document.querySelectorAll('#ordersBody tr');
-            
-            rows.forEach(row => {
-                const congregation = row.cells[2].textContent.toLowerCase();
-                const status = row.cells[7].querySelector('select').value;
-                
-                const matchesSearch = congregation.includes(searchText);
-                const matchesStatus = !statusFilter || status === statusFilter;
-                
-                row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
-            });
-        }
-        
-        // Função para visualizar um pedido
-        function viewOrder(orderId) {
-            const orders = JSON.parse(localStorage.getItem('pedidosRevistas')) || [];
-            const order = orders.find(o => o.id === orderId);
-            
-            if (order) {
-                let itemsHtml = '<table border="1" style="width:100%; border-collapse:collapse; margin-top:10px;">';
-                itemsHtml += `
-                    <tr>
-                        <th>Material</th>
-                        <th>Alunos</th>
-                        <th>Professores</th>
-                        <th>Kits</th>
-                        <th>Subtotal</th>
-                    </tr>
-                `;
-                
-                order.items.forEach(item => {
-                    itemsHtml += `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.quantities.aluno || '0'}</td>
-                            <td>${item.quantities.professor || '0'}</td>
-                            <td>${item.quantities.kit || '0'}</td>
-                            <td>${item.subtotal}</td>
-                        </tr>
-                    `;
-                });
-                
-                itemsHtml += '</table>';
-                
-                alert(`
-                    Detalhes do Pedido:
-                    Congregação: ${order.congregation}
-                    Coordenador: ${order.coordinator}
-                    Telefone: ${order.phone}
-                    Trimestre: ${order.trimester}
-                    Total: ${order.total}
-                    
-                    ${itemsHtml}
-                `);
-            }
-        }
-        
-        // Função para atualizar o status
-        function updateStatus(orderId, newStatus) {
-            const orders = JSON.parse(localStorage.getItem('pedidosRevistas')) || [];
-            const orderIndex = orders.findIndex(o => o.id === orderId);
-            
-            if (orderIndex !== -1) {
-                orders[orderIndex].status = newStatus;
-                localStorage.setItem('pedidosRevistas', JSON.stringify(orders));
-                showAlert('Status atualizado com sucesso!');
-            }
-        }
-        
-        // Função para excluir um pedido
-        function deleteOrder(orderId) {
-            if (confirm('Tem certeza que deseja excluir este pedido?')) {
-                const orders = JSON.parse(localStorage.getItem('pedidosRevistas')) || [];
-                const updatedOrders = orders.filter(o => o.id !== orderId);
-                localStorage.setItem('pedidosRevistas', JSON.stringify(updatedOrders));
-                loadOrders();
-                showAlert('Pedido excluído com sucesso!');
-            }
-        }
-        
-        // Função para exportar para Excel
-        function exportToExcel() {
-            // Implementação simplificada - em produção use uma biblioteca como SheetJS
-            const orders = JSON.parse(localStorage.getItem('pedidosRevistas')) || [];
-            let csv = 'Data,Grupo,Congregação,Coordenador,Telefone,Trimestre,Total,Status\n';
-            
-            orders.forEach(order => {
-                const date = new Date(order.timestamp);
-                const formattedDate = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
-                
-                csv += `"${formattedDate}","${order.group || ''}","${order.congregation || ''}",` +
-                      `"${order.coordinator || ''}","${order.phone || ''}","${order.trimester || ''}",` +
-                      `"${order.total || 'R$ 0,00'}","${order.status || 'pendente'}"\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `pedidos_revistas_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-        
-        // Função de logout
-        function logout() {
-            window.location.href = 'index.html';
-        }
-        
-        // Função auxiliar para mostrar alertas
-        function showAlert(message) {
-            alert(message);
-        }
-        
-        // Carrega os pedidos quando a página é aberta
-        document.addEventListener('DOMContentLoaded', loadOrders);
-    </script>
+        // Criar link de download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `pedidos-ebd-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (format === 'pdf') {
+        alert("Exportação para PDF seria implementada aqui com uma biblioteca como jsPDF");
+        // Implementar geração de PDF com jsPDF ou similar
+      }
+      
+      // Feedback visual
+      const btn = document.getElementById(`export${format === 'excel' ? 'Excel' : 'PDF'}`);
+      btn.innerHTML = `<i class="fas fa-check"></i> ${format === 'excel' ? 'Excel' : 'PDF'}`;
+      setTimeout(() => {
+        btn.innerHTML = `<i class="fas fa-file-${format === 'excel' ? 'excel' : 'pdf'}"></i> ${format === 'excel' ? 'Excel' : 'PDF'}`;
+      }, 2000);
+    }
+
+    function recarregarPedidos() {
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      renderizarPedidos(pedidos);
+      atualizarDashboard(pedidos);
+      document.getElementById('lastUpdateTime').textContent = formatarData(new Date().toISOString());
+      
+      // Feedback visual
+      const btn = document.getElementById("refreshBtn");
+      btn.innerHTML = '<i class="fas fa-check"></i>';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+      }, 1000);
+    }
+
+    function filtrarPedidos() {
+      const termo = document.getElementById("searchInput").value.toLowerCase();
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      
+      if (!termo) {
+        renderizarPedidos(pedidos);
+        return;
+      }
+      
+      const pedidosFiltrados = pedidos.filter(pedido => {
+        return (
+          (pedido.grupo && pedido.grupo.toLowerCase().includes(termo)) ||
+          (pedido.congregacao && pedido.congregacao.toLowerCase().includes(termo)) ||
+          (pedido.coordenador && pedido.coordenador.toLowerCase().includes(termo)) ||
+          (pedido.telefone && pedido.telefone.includes(termo)) ||
+          (pedido.trimestre && pedido.trimestre.toLowerCase().includes(termo)) ||
+          (pedido.itens && pedido.itens.some(item => 
+            (item.material && item.material.toLowerCase().includes(termo)) ||
+            (item.aluno && item.aluno.toLowerCase().includes(termo)) ||
+            (item.professor && item.professor.toLowerCase().includes(termo)) ||
+            (item.kit && item.kit.toLowerCase().includes(termo))
+          ))
+        );
+      });
+      
+      renderizarPedidos(pedidosFiltrados);
+    }
+  </script>
 </body>
 </html>
