@@ -234,146 +234,91 @@ function toggleLoading(show) {
 }
 
 // Função principal para gerar e compartilhar PDF
-/**
- * Função completa para gerenciamento de pedidos
- * @param {string} action - 'save', 'pdf' ou 'all' (salvar, gerar PDF ou ambos)
- * @param {boolean} [share=true] - Se true, compartilha via WhatsApp após gerar PDF
- */
-async function gerenciarPedido(action = 'all', share = true) {
-  try {
-    // 1. Validação inicial
-    if (!['save', 'pdf', 'all'].includes(action)) {
-      throw new Error('Ação inválida. Use "save", "pdf" ou "all"');
+function generateAndSharePDF() {
+  showCaptcha();
+
+  window.onCaptchaSuccess = function() {
+    calculateSubtotals();
+
+    const buttons = document.querySelectorAll('.no-print');
+    buttons.forEach(btn => btn.style.display = 'none');
+
+    const totalElement = document.getElementById('total');
+    if (!totalElement || totalElement.textContent === 'R$ 0,00') {
+      showToast('Adicione pelo menos um item ao pedido!');
+      buttons.forEach(btn => btn.style.display = '');
+      return;
     }
 
-    // 2. Coletar dados do formulário
-    const formData = coletarDadosFormulario();
-    
-    // 3. Executar ações conforme solicitado
-    if (action === 'save' || action === 'all') {
-      salvarPedidoLocal(formData);
-    }
+    toggleLoading(true);
 
-    if (action === 'pdf' || action === 'all') {
-      await gerarECompartilharPDF(formData, share);
-    }
-
-  } catch (error) {
-    console.error('Erro no gerenciamento de pedido:', error);
-    showToast(`Erro: ${error.message}`, 'error');
-  }
-}
-
-// Funções auxiliares
-function coletarDadosFormulario() {
-  const itens = [];
-  document.querySelectorAll("tbody tr").forEach(tr => {
-    const inputs = tr.querySelectorAll("input");
-    if (inputs.length > 0) {
-      itens.push({
-        material: tr.children[1]?.innerText.trim(),
-        aluno: inputs[0]?.value || 0,
-        professor: inputs[1]?.value || 0,
-        kit: inputs[2]?.value || 0,
-      });
-    }
-  });
-
-  return {
-    grupo: document.getElementById('group').value,
-    congregacao: document.getElementById('congregation').value,
-    coordenador: document.getElementById('coordinator').value,
-    telefone: document.getElementById('phone').value,
-    itens,
-    data: new Date().toISOString(),
-    total: calcularTotal(itens)
-  };
-}
-
-function salvarPedidoLocal(dados) {
-  const pedidosAntigos = JSON.parse(localStorage.getItem("pedidos") || "[]");
-  pedidosAntigos.push(dados);
-  localStorage.setItem("pedidos", JSON.stringify(pedidosAntigos));
-  showToast('Pedido salvo localmente!', 'success');
-}
-
-async function gerarECompartilharPDF(dados, share = true) {
-  // Esconder elementos não imprimíveis
-  document.querySelectorAll('.no-print').forEach(btn => btn.style.display = 'none');
-
-  // Verificar se há itens no pedido
-  if (dados.total <= 0) {
-    showToast('Adicione pelo menos um item ao pedido!', 'warning');
-    document.querySelectorAll('.no-print').forEach(btn => btn.style.display = '');
-    return;
-  }
-
-  toggleLoading(true);
-
-  try {
-    // Configuração do PDF
+    const element = document.getElementById('form-container');
     const now = new Date();
-    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(now.getMonth() / 3)];
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
+
+    // Configuração do PDF
     const opt = {
       margin: 0,
-      filename: `Pedido_Revistas_${trimester}_Trimestre_${now.getFullYear()}.pdf`,
-      ...SYSTEM_CONFIG.pdfOptions // Configurações padrão do sistema
+      filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait' 
+      }
     };
 
-    // Gerar PDF
-    const pdfData = await html2pdf()
-      .set(opt)
-      .from(document.getElementById('form-container'))
-      .toPdf()
-      .get('pdf')
-      .then(pdf => ({
-        blob: pdf.output('blob'),
-        url: URL.createObjectURL(pdf.output('blob')),
-        filename: opt.filename
-      }));
+    // Dados do formulário
+    const congregation = document.getElementById('congregation').value || 'Não informado';
+    const coordinator = document.getElementById('coordinator').value || 'Não informado';
+    const phone = document.getElementById('phone').value || 'Não informado';
 
-    // Compartilhar via WhatsApp se solicitado
-    if (share) {
+    // Geração do PDF
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Mensagem para WhatsApp
       const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
-        `*Congregação:* ${dados.congregacao || 'Não informado'}\n` +
-        `*Coordenador:* ${dados.coordenador || 'Não informado'}\n` +
-        `*Telefone:* ${dados.telefone || 'Não informado'}\n` +
-        `*Trimestre:* ${trimester} Trimestre ${now.getFullYear()}\n` +
-        `*Total:* ${formatCurrency(dados.total)}\n` +
+        `*Congregação:* ${congregation}\n` +
+        `*Coordenador:* ${coordinator}\n` +
+        `*Telefone:* ${phone}\n` +
+        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
         `Pedido completo em anexo.`;
 
-      // Download automático do PDF
+      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
+
+      // Cria link para download e abre WhatsApp após 1 segundo
       const a = document.createElement('a');
-      a.href = pdfData.url;
-      a.download = pdfData.filename;
+      a.href = pdfUrl;
+      a.download = opt.filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
       a.click();
 
-      // Abrir WhatsApp após pequeno delay
+      // Abre WhatsApp após 1 segundo
       setTimeout(() => {
-        window.open(`https://wa.me/${SYSTEM_CONFIG.whatsappContact}?text=${encodeURIComponent(message)}`, '_blank');
-        URL.revokeObjectURL(pdfData.url); // Limpar memória
-      }, 500);
-    }
+        window.open(whatsappUrl, '_blank');
+        document.body.removeChild(a);
+        URL.revokeObjectURL(pdfUrl);
+        buttons.forEach(btn => btn.style.display = '');
+        toggleLoading(false);
+      }, 1000);
 
-  } finally {
-    toggleLoading(false);
-    document.querySelectorAll('.no-print').forEach(btn => btn.style.display = '');
-  }
-}
-
-// Funções de apoio
-function calcularTotal(itens) {
-  return itens.reduce((total, item) => {
-    // Supondo que cada item tenha um valor associado
-    return total + (item.aluno * 10) + (item.professor * 10) + (item.kit * 15);
-  }, 0);
-}
-
-function formatCurrency(value) {
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
+    }).catch(err => {
+      console.error('Erro ao gerar PDF:', err);
+      toggleLoading(false);
+      buttons.forEach(btn => btn.style.display = '');
+      showToast('Erro ao gerar PDF. Por favor, tente novamente.');
+    });
+  };
 }
 
 // Função para resetar o formulário
