@@ -237,7 +237,7 @@ function toggleLoading(show) {
 function generateAndSharePDF() {
   showCaptcha();
 
-  window.onCaptchaSuccess = function() {
+  window.onCaptchaSuccess = function () {
     calculateSubtotals();
 
     const buttons = document.querySelectorAll('.no-print');
@@ -258,101 +258,46 @@ function generateAndSharePDF() {
     const month = now.getMonth();
     const trimester = ["1º", "2º", "3º", "4º"][Math.floor(month / 3)];
 
-    // Configuração do PDF
     const opt = {
       margin: 0,
       filename: `Pedido_Revistas_${trimester}_Trimestre_${year}.pdf`,
       image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
+      html2canvas: {
         scale: 2,
         useCORS: true,
         letterRendering: true
       },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
-        orientation: 'portrait' 
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
       }
     };
-    
 
-    // Dados do formulário
     const congregation = document.getElementById('congregation').value || 'Não informado';
     const coordinator = document.getElementById('coordinator').value || 'Não informado';
     const phone = document.getElementById('phone').value || 'Não informado';
 
-    // Geração do PDF
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      // Mensagem para WhatsApp
-      const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
-        `*Congregação:* ${congregation}\n` +
-        `*Coordenador:* ${coordinator}\n` +
-        `*Telefone:* ${phone}\n` +
-        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
-        `Pedido completo em anexo.`;
-        const formData = collectFormData();
-    
- 
+      // 👉 Salva o PDF temporariamente com o pedido
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      const pedido = {
+        timestamp: Date.now(),
+        congregacao: congregation,
+        coordenador: coordinator,
+        telefone: phone,
+        trimestre: `${trimester} Trimestre ${year}`,
+        pdfUrl: pdfUrl, // ⚠️ URL temporária
+        itens: obterItensDoFormulario() // ← você precisa adaptar com seus dados reais
+      };
 
-// Modifique a função generateAndSharePDF para salvar o pedido
-async function generateAndSharePDF() {
-    if (!isCaptchaVerified()) {
-        showCaptcha();
-        return;
-    }
+      pedidos.push(pedido);
+      localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
-    const formData = collectFormData();
-    
-    // Verifica se há itens no pedido
-    const numericTotal = parseFloat(formData.total.replace(/[^\d,]/g, '').replace(',', '.'));
-    if (isNaN(numericTotal) || numericTotal === 0) {
-        showToast('Adicione pelo menos um item ao pedido!');
-        return;
-    }
-
-    try {
-        toggleLoading(true);
-        
-        // 1. Salvar no localStorage
-        const pedidoSalvo = salvarPedido({
-            group: document.getElementById('group').value,
-            congregation: formData.congregation,
-            coordinator: formData.coordinator,
-            phone: formData.phone,
-            items: formData.items,
-            total: formData.total,
-            trimester: document.getElementById('trimester').textContent.trim()
-        });
-        
-        // 2. Gerar PDF
-        const pdfBlob = await generatePDF(formData);
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        
-        // 3. Compartilhar via WhatsApp
-        await shareViaWhatsApp(formData, pdfUrl);
-        
-        showToast('Pedido enviado com sucesso!');
-    } catch (error) {
-        console.error('Erro no processo:', error);
-        showToast('Erro ao enviar pedido. Tente novamente.');
-    } finally {
-        toggleLoading(false);
-    }
-}
-
-// Event listener corrigido
-document.getElementById('btn-enviar').addEventListener('click', function() {
-  // Envolvemos em uma IIFE async para poder usar await
-  (async () => {
-    await enviarPedido();
-  })().catch(console.error);
-});
-      const whatsappUrl = `https://wa.me/5591981918866?text=${encodeURIComponent(message)}`;
-
-      // Cria link para download e abre WhatsApp após 1 segundo
+      // 🔽 Dispara o download
       const a = document.createElement('a');
       a.href = pdfUrl;
       a.download = opt.filename;
@@ -360,15 +305,20 @@ document.getElementById('btn-enviar').addEventListener('click', function() {
       document.body.appendChild(a);
       a.click();
 
-      // Abre WhatsApp após 1 segundo
+      // 🔁 WhatsApp
+      const message = `*PEDIDO DE REVISTAS - EBD*\n\n` +
+        `*Congregação:* ${congregation}\n` +
+        `*Coordenador:* ${coordinator}\n` +
+        `*Telefone:* ${phone}\n` +
+        `*Trimestre:* ${trimester} Trimestre ${year}\n` +
+        `Pedido completo em anexo.`;
+
       setTimeout(() => {
-        window.open(whatsappUrl, '_blank');
+        window.open(`https://wa.me/5591981918866?text=${encodeURIComponent(message)}`, '_blank');
         document.body.removeChild(a);
-        URL.revokeObjectURL(pdfUrl);
         buttons.forEach(btn => btn.style.display = '');
         toggleLoading(false);
       }, 1000);
-
     }).catch(err => {
       console.error('Erro ao gerar PDF:', err);
       toggleLoading(false);
@@ -446,9 +396,36 @@ const congregationsByGroup = {
       congregationSelect.disabled = true;
     }
   }
-  function salvarPedido(pedido) {
-  const pedidosSalvos = JSON.parse(localStorage.getItem("revistaOrders")) || [];
-  pedidosSalvos.push(pedido);
-  localStorage.setItem("revistaOrders", JSON.stringify(pedidosSalvos));
+ function salvarPedido() {
+  const itens = [];
+  document.querySelectorAll("tbody tr").forEach(tr => {
+    const inputs = tr.querySelectorAll("input");
+    if (inputs.length > 0) {
+      const item = {
+        material: tr.children[1]?.innerText.trim(),
+        aluno: inputs[0]?.value || 0,
+        professor: inputs[1]?.value || 0,
+        kit: inputs[2]?.value || 0,
+      };
+      itens.push(item);
+    }
+  });
+
+  const dados = {
+    grupo: document.getElementById('group').value,
+    congregacao: document.getElementById('congregation').value,
+    coordenador: document.getElementById('coordinator').value,
+    telefone: document.getElementById('phone').value,
+    itens: itens,
+    data: new Date().toLocaleString()
+  };
+
+  // pega pedidos antigos
+  const pedidosAntigos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+  pedidosAntigos.push(dados);
+  localStorage.setItem("pedidos", JSON.stringify(pedidosAntigos));
+
+  alert("Pedido salvo localmente!");
 }
+
 
