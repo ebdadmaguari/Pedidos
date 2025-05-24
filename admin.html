@@ -572,7 +572,7 @@
       <div class="footer-links">
         <a href="#"><i class="fas fa-question-circle"></i> Ajuda</a>
         <a href="#"><i class="fas fa-cog"></i> Configurações</a>
-        <a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Sair</a>
       </div>
     </div>
   </footer>
@@ -692,21 +692,39 @@
     }
 
     function mostrarDetalhesPedido(e) {
-  const pedidoId = e.target.closest('button').getAttribute('data-id');
-  const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
-  const pedido = pedidos[pedidoId];
+      const pedidoId = e.target.closest('button').getAttribute('data-id');
+      const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      const pedido = pedidos[pedidoId];
+      
+      if (!pedido) return;
+      
+      // Criar modal ou mostrar detalhes
+      const detalhesContent = `
+        <div class="material-details">
+          <p><strong>Data:</strong> ${formatarData(pedido.timestamp)}</p>
+          <p><strong>Grupo:</strong> ${pedido.grupo || '-'}</p>
+          <p><strong>Congregação:</strong> ${pedido.congregacao || '-'}</p>
+          <p><strong>Coordenador:</strong> ${pedido.coordenador || '-'}</p>
+          <p><strong>Telefone:</strong> ${pedido.telefone || '-'}</p>
+          <p><strong>Trimestre:</strong> ${pedido.trimestre || 'Não informado'}</p>
+          <p><strong>Total de itens:</strong> ${pedido.itens ? pedido.itens.length : 0}</p>
+          <h4>Materiais:</h4>
+          <ul>
+            ${pedido.itens ? pedido.itens.map(item => `
+              <li>
+                <strong>${item.material || 'Material não especificado'}</strong>
+                <p>Aluno: ${item.aluno || '-'}</p>
+                <p>Professor: ${item.professor || '-'}</p>
+                <p>Kit: ${item.kit || '-'}</p>
+              </li>
+            `).join('') : '<li>Nenhum item encontrado</li>'}
+          </ul>
+        </div>
+      `;
+      
+      alert(detalhesContent); // Substituir por um modal mais elegante se necessário
+    }
 
-  if (!pedido) return;
-
-  // Mostra os detalhes do pedido na interface...
-
-  if (pedido.pdfUrl) {
-    // Abre o PDF na nova aba
-    window.open(pedido.pdfUrl, '_blank');
-  } else {
-    showToast("PDF não disponível para este pedido.");
-  }
-}
     function excluirPedido(e) {
       const pedidoId = e.target.closest('button').getAttribute('data-id');
       const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
@@ -718,23 +736,59 @@
       }
     }
 
-    function formatarData(dataString) {
-      if (!dataString) return 'Data não disponível';
-      
-      const options = { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      };
-      
-      try {
-        return new Date(dataString).toLocaleDateString('pt-BR', options);
-      } catch (e) {
-        return dataString; // Retorna o valor original se não puder ser formatado
-      }
+  /**
+ * Formata uma data para o padrão brasileiro (DD/MM/YYYY HH:mm:ss)
+ * @param {string|Date|number} [dataString] - Data a ser formatada (opcional)
+ * @param {boolean} [includeSeconds=true] - Inclui segundos na formatação
+ * @returns {string} Data formatada (se válida) ou data atual formatada
+ */
+function formatarData(dataString, includeSeconds = true) {
+  // Opções de formatação
+  const opcoesFormatacao = { 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false // Formato 24 horas
+  };
+  
+  // Adiciona segundos se solicitado (true por padrão)
+  if (includeSeconds) {
+    opcoesFormatacao.second = '2-digit';
+  }
+
+  // Função para formatar a data atual
+  const formatarDataAtual = () => {
+    return new Date().toLocaleDateString('pt-BR', opcoesFormatacao)
+      .replace(',', '')
+      .replace(/\s+/g, ' ');
+  };
+
+  // Se não receber nenhum parâmetro, retorna a data atual
+  if (arguments.length === 0) {
+    return formatarDataAtual();
+  }
+
+  try {
+    // Converte para Date se não for já
+    const data = dataString instanceof Date ? dataString : new Date(dataString);
+    
+    // Se a data for inválida, retorna a data atual
+    if (isNaN(data.getTime())) {
+      return formatarDataAtual();
     }
+    
+    // Formata a data recebida
+    return data.toLocaleDateString('pt-BR', opcoesFormatacao)
+               .replace(',', '')
+               .replace(/\s+/g, ' ');
+  } catch (erro) {
+    console.error('Erro ao formatar data:', erro);
+    return formatarDataAtual();
+  }
+} 
+
 
     function limparPedidos() {
       if (confirm("Tem certeza que deseja apagar todos os pedidos salvos? Esta ação não pode ser desfeita.")) {
