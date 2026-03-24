@@ -1,355 +1,928 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pedido de Revistas - Escola Bíblica Dominical</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <link rel="icon" type="image/png" sizes="192x192" href="logotipoebd.png">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedido de Revistas – EBD 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --navy:#002147;
+  --blue:#1a4a8a;
+  --blue-mid:#2b5797;
+  --blue-lite:#e8f0fa;
+  --accent:#e8b84b;
+  --white:#fff;
+  --bg:#f0f4f9;
+  --text:#1a1a2e;
+  --muted:#6b7a99;
+  --border:#d5def0;
+  --red:#c0392b;
+  --green:#0a7a06;
+  --radius:12px;
+  --shadow:0 20px 60px rgba(0,33,71,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
+body{
+  font-family:'Sora',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:24px 16px 60px;
+}
+
+/* ── HEADER ──────────────────── */
+.page-header{
+  max-width:900px;
+  margin:0 auto 22px;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--blue-mid) 100%);
+  border-radius:var(--radius);
+  padding:24px 28px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  box-shadow:0 8px 32px rgba(0,33,71,.25);
+}
+
+.header-logo{
+  width:52px;height:52px;
+  background:rgba(255,255,255,.12);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.2);
+}
+
+.header-text h1{
+  font-family:'Lora',serif;
+  font-size:clamp(14px,3vw,18px);
+  font-weight:700;
+  line-height:1.3;
+}
+
+.header-text p{
+  font-size:11.5px;
+  opacity:.75;
+  margin-top:4px;
+  line-height:1.6;
+}
+
+.badge-trimestre{
+  margin-left:auto;
+  background:var(--accent);
+  color:var(--navy);
+  font-size:11px;
+  font-weight:700;
+  padding:6px 14px;
+  border-radius:20px;
+  white-space:nowrap;
+  flex-shrink:0;
+  letter-spacing:.3px;
+}
+
+/* ── CARD WRAPPER ─────────────── */
+.card{
+  max-width:900px;
+  margin:0 auto;
+  background:var(--white);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  animation:fadeUp .4s ease both;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── SECTION LABEL ────────────── */
+.section-label{
+  font-size:10.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:var(--blue-mid);
+  padding:18px 24px 10px;
+  border-bottom:1.5px solid var(--blue-lite);
+}
+
+/* ── IDENTIFICATION FIELDS ─────── */
+.ident-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  padding:16px 24px 20px;
+}
+
+.field-group{display:flex;flex-direction:column;gap:6px;}
+
+label.fl{
+  font-size:11px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+
+label.fl span{color:var(--red);margin-left:2px;}
+
+input.fi, select.fi{
+  padding:11px 14px;
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  font-family:'Sora',sans-serif;
+  font-size:13.5px;
+  color:var(--text);
+  background:#fafbfd;
+  transition:border-color .2s,box-shadow .2s;
+  outline:none;
+}
+
+input.fi:focus, select.fi:focus{
+  border-color:var(--blue-mid);
+  box-shadow:0 0 0 3px rgba(43,87,151,.1);
+  background:#fff;
+}
+
+select.fi{
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7a99'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  background-size:16px;
+  background-color:#fafbfd;
+  padding-right:36px;
+}
+
+.fi.error{border-color:var(--red)!important;}
+.err-msg{font-size:11px;color:var(--red);display:none;}
+.err-msg.show{display:block;}
+
+/* ── TABLE AREA ───────────────── */
+.table-wrap{overflow-x:auto;padding:0 24px 24px;}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12.5px;
+}
+
+thead th{
+  background:var(--navy);
+  color:#fff;
+  padding:9px 10px;
+  text-align:left;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:600;
+  border:none;
+}
+
+thead th:first-child{border-radius:8px 0 0 0;}
+thead th:last-child{border-radius:0 8px 0 0;}
+
+.sec-row td{
+  background:var(--blue-mid);
+  color:#fff;
+  font-size:10.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  padding:6px 10px;
+  text-align:center;
+  border:none;
+}
+
+tbody tr:not(.sec-row){border-bottom:1px solid var(--border);}
+tbody tr:not(.sec-row):hover{background:#f7f9fe;}
+
+td{padding:7px 10px;vertical-align:middle;color:var(--text);border:none;}
+
+td.mat{font-weight:500;color:var(--navy);font-size:12px;}
+td.price{font-size:11px;color:var(--muted);white-space:nowrap;}
+td.center{text-align:center;color:#bbb;}
+td.sub{
+  text-align:right;
+  font-weight:700;
+  font-size:12.5px;
+  color:var(--blue-mid);
+  white-space:nowrap;
+  min-width:80px;
+}
+
+input.qty{
+  width:58px;
+  padding:5px 6px;
+  border:1.5px solid var(--border);
+  border-radius:7px;
+  text-align:center;
+  font-family:'Sora',sans-serif;
+  font-size:13px;
+  background:#fafbfd;
+  outline:none;
+  transition:border-color .2s;
+  display:block;
+  margin:0 auto;
+}
+
+input.qty:focus{border-color:var(--blue-mid);}
+input.qty:hover{border-color:#a0b0d0;}
+
+/* ── TOTAL ────────────────────── */
+.total-bar{
+  margin:0 24px 24px;
+  background:linear-gradient(135deg,var(--navy),var(--blue-mid));
+  border-radius:10px;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#fff;
+}
+
+.total-bar .label{font-size:12px;font-weight:600;opacity:.8;}
+.total-bar .value{font-family:'Lora',serif;font-size:22px;font-weight:700;color:var(--accent);}
+
+/* ── ACTIONS ──────────────────── */
+.actions{
+  padding:0 24px 28px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  flex:1;
+  min-width:150px;
+  padding:14px 18px;
+  border:none;
+  border-radius:10px;
+  font-family:'Sora',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  transition:transform .15s,box-shadow .15s,opacity .2s;
+}
+
+.btn:hover:not(:disabled){transform:translateY(-2px);}
+.btn:disabled{opacity:.5;cursor:default;transform:none;}
+
+.btn-enviar{
+  background:linear-gradient(135deg,var(--navy),var(--blue-mid));
+  color:#fff;
+  box-shadow:0 6px 20px rgba(27,74,138,.25);
+}
+.btn-enviar:hover:not(:disabled){box-shadow:0 10px 28px rgba(27,74,138,.35);}
+
+.btn-pdf{
+  background:linear-gradient(135deg,#c0392b,#e74c3c);
+  color:#fff;
+  box-shadow:0 6px 20px rgba(192,57,43,.2);
+}
+
+.btn-wpp{
+  background:linear-gradient(135deg,#128c3e,#25d366);
+  color:#fff;
+  box-shadow:0 6px 20px rgba(18,140,62,.2);
+}
+
+/* ── SUCCESS SCREEN ────────────── */
+#successScreen{display:none;padding:48px 24px;text-align:center;}
+
+.check-circle{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,var(--navy),var(--blue-mid));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+  margin:0 auto 20px;
+  animation:pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+#successScreen h2{
+  font-family:'Lora',serif;
+  font-size:22px;
+  color:var(--navy);
+  margin-bottom:10px;
+}
+
+#successScreen p{
+  font-size:13.5px;
+  color:var(--muted);
+  line-height:1.7;
+  max-width:380px;
+  margin:0 auto 24px;
+}
+
+.post-actions{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+}
+
+/* ── FOOTER ───────────────────── */
+.footer{
+  text-align:center;
+  padding:14px;
+  font-size:11px;
+  color:#aaa;
+  border-top:1px solid var(--border);
+}
+
+/* ── RESPONSIVE ───────────────── */
+@media(max-width:560px){
+  .ident-grid{grid-template-columns:1fr;}
+  .page-header{flex-wrap:wrap;}
+  .badge-trimestre{margin-left:0;}
+  .actions{flex-direction:column;}
+}
+</style>
 </head>
 <body>
-   
-    <div id="form-container">
-<div class="cabecalho">
-  <img src="Cópia de AEG - (080) (4).png" alt="Logo Esquerda" class="logo-img">
 
-  <div class="texto-central">
-    <h1>IGREJA EVANGÉLICA ASSEMBLEIA DE DEUS - CAMPO NO MAGUARI</h1>
-    <p>
-      DEPARTAMENTO DA ESCOLA BÍBLICA DOMINICAL <br>
-      CNPJ: 15.296.627/0001-09 <br>
-      Templo Central: Av. Cláudio Sanders, Nº 02, Maguari - ANANINDEUA-PA <br>
-      Pr. Presidente: Wilton Marques Vicente <br>
-      Superintendente: Midian e Álvaro Rodrigues
-    </p>
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-logo">📖</div>
+  <div class="header-text">
+    <h1>Igreja Evangélica Assembleia de Deus – Campo no Maguari</h1>
+    <p>Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09<br>
+       Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente</p>
   </div>
-
-  <img src="LOGO EBD.png" alt="Logo Direita" class="logo-img">
+  <div class="badge-trimestre">1º Trim. 2026</div>
 </div>
 
-    <div class="title-container">
-      <h2><B>PEDIDO DE REVISTAS - <span id="trimester">TRIMESTRE 202_</B></span></h2>
-    </div>
-     <div class="form-header">
-      <div class="form-group1">
-        <label><b>GRUPO:</b></label>
-        <select id="group" onchange="updateCongregations()">
-      <option value="">Selecione o grupo</option>
-      <option value="grupo1">Grupo 01</option>
-      <option value="grupo2">Grupo 02</option>
-      <option value="grupo3">Grupo 03</option>
-      <option value="grupo4">Grupo 04</option>
-      <option value="grupo5">Grupo 05</option>
-      <option value="grupo6">Grupo 06</option>
-      <option value="grupo7">Grupo 07</option>
-      <option value="grupo8">Grupo 08</option>
-      <option value="grupo9">Grupo 09</option>
-      <option value="grupo10">Grupo 10</option>
-      <option value="grupo11">Grupo 11</option>
-      <option value="grupo12">Grupo 12</option>
-      <option value="grupo13">Grupo 13</option>
-      <option value="grupo14">Grupo 14</option>
-      <option value="grupo15">Grupo 15</option>
-      <option value="grupo16">Grupo 16</option>
-      <option value="grupo17">Grupo 17</option>
-      <option value="grupo18">Grupo 18</option>
-      <option value="grupo19">Grupo 19</option>
-      <option value="grupo20">Grupo 20</option>
-    </select>
-      </div>
-      <div class="form-group1">
-        <label><b>CONGREGAÇÃO:</b></label>
-        <select id="congregation" disabled>
-      <option value="">Selecione a congregação</option>
-    </select>
-      </div>
-      <div class="form-group">
-        <label><B>COORDENADOR(A):</B></label>
-        <input type="text" id="coordinator" placeholder="Nome do coordenador">
-      </div>
-      <div class="form-group">
-        <label><B>FONE:</B></label>
-        <input type="tel" id="phone" placeholder="(00) 00000-0000">
-      </div>
+<!-- MAIN CARD -->
+<div class="card" id="mainCard">
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="section-label">📋 Identificação</div>
+  <form id="formPedido" novalidate>
+
+  <div class="ident-grid">
+    <div class="field-group">
+      <label class="fl">Grupo <span>*</span></label>
+      <select name="grupo" id="grupo" class="fi" required>
+        <option value="">Selecione o grupo</option>
+        <option>Grupo 01</option><option>Grupo 02</option><option>Grupo 03</option>
+        <option>Grupo 04</option><option>Grupo 05</option><option>Grupo 06</option>
+        <option>Grupo 07</option><option>Grupo 08</option><option>Grupo 09</option>
+        <option>Grupo 10</option><option>Grupo 11</option><option>Grupo 12</option>
+        <option>Grupo 13</option><option>Grupo 14</option><option>Grupo 15</option>
+        <option>Grupo 16</option><option>Grupo 17</option><option>Grupo 18</option>
+      </select>
+      <div class="err-msg" id="err-grupo">Selecione o grupo.</div>
     </div>
 
-    <div class="tabela-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th rowspan="2">VALOR UNITARIO</th>
-            <th rowspan="2">MATERIAL</th>
-            <th rowspan="2">ALUNO</th>
-            <th rowspan="2">PROFESSOR</th>
-            <th colspan="2" style="text-align: center;">KIT VISUAIS + PROFESSOR</th>
-          </tr>
-          <tr>
-            <th>QUANTIDADE</th>
-            <th>SUBTOTAL R$</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- CRIANÇAS -->
-          <tr>
-            <td colspan="6" class="category-header">CRIANÇAS</td>
-          </tr>
-          <tr class="row-blue">
-            <td rowspan="4">
-              <b>Criança: R$ 8,00</b><br>
-              <b>Professor: R$ 15,00</b><br>
-              <b>Kit: R$ 45,00</b>
-            </td>
-            <td><b>Maternal (3/4 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="8" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="kit" data-price="45" min="0"></td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-blue">
-            <td><b>Jard. Infância (5/6 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="8" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="kit" data-price="45" min="0"></td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-blue">
-            <td><b>Primário (7/8 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="8" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="kit" data-price="45" min="0"></td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-blue">
-            <td><b>Juniores (9/10 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="8" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="kit" data-price="45" min="0"></td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-
-          <!-- ADOLESCENTES E JOVENS -->
-          <tr>
-            <td colspan="6" class="category-header">ADOLESCENTES E JOVENS</td>
-          </tr>
-          <tr class="row-orange">
-            <td rowspan="4">
-              <b>Aluno: R$ 10,00</b></br>
-              <b> Professor: R$ 15,00</b>
-            </td>
-            <td><b>Pré-Adolescentes (11/12 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-orange">
-            <td><b>Adolescentes (13/14 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-orange">
-            <td><b>Juvenis (15/17 anos)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-orange">
-            <td><b>Jovem (normal)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-
-          <!-- ADULTOS -->
-          <tr>
-            <td colspan="6" class="category-header">ADULTOS</td>
-          </tr>
-          <tr class="row-orange">
-            <td rowspan="2">
-             <b> Aluno: R$ 10,00</b><br>
-             <b> Professor: R$ 15,00</b>
-            </td>
-            <td><b>Adultos (normal)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-orange">
-            <td><b>Discipulado (normal)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="10" min="0"></td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-
-          <!-- MATERIAIS ADICIONAIS -->
-          <tr>
-            <td colspan="6" class="category-header">MATERIAIS ADICIONAIS</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 17,00</b></td>
-            <td><b>Letra gigante Aluno</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="17" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 20,00</b></td>
-            <td><b>Letra gigante Professor</b></td>
-            <td>——</td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="20" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 30,00</b></td>
-            <td><b>Adultos (capa dura)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="30" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 20,00</b></td>
-            <td><b>Livro de apoio (Jovens)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="20" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 20,00</b></td>
-            <td><b>Livro de apoio (Adulto)</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="20" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 15,00</b></td>
-            <td><b>Ensinador Cristão</b></td>
-            <td>——</td>
-            <td><input type="number" class="qty-input" data-type="teacher" data-price="15" min="0"></td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 5,00</b></td>
-            <td><b>Caderneta de Chamada</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="5" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-          <tr class="row-green">
-            <td><b>R$ 15,00</b></td>
-            <td><b>Livro de Relatório</b></td>
-            <td><input type="number" class="qty-input" data-type="student" data-price="15" min="0"></td>
-            <td>——</td>
-            <td>——</td>
-            <td class="subtotal">R$ 0,00</td>
-          </tr>
-
-          <!-- Total -->
-          <tr>
-            <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL ATUALIZADO:</td>
-            <td id="total" style="font-weight: bold;">R$ 0,00</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="field-group">
+      <label class="fl">Congregação <span>*</span></label>
+      <input type="text" id="congregacao" name="congregacao" class="fi" placeholder="Ex: Maguari Central" required>
+      <div class="err-msg" id="err-congregacao">Informe a congregação.</div>
     </div>
-    <div class="assinatura-box">
-  <div class="assinaturas">
-    <div class="linha-assinatura">
-      <div class="campo">
-        ____________________________<br>
-                <b>DIRIGENTE</b>
-      </div>
-      <div class="campo">
-        ____________________________<br>
-             <b>COORDENADOR (A)</b>
-      </div>
+
+    <div class="field-group">
+      <label class="fl">Coordenador(a) <span>*</span></label>
+      <input type="text" id="coordenador" name="coordenador" class="fi" placeholder="Nome completo" required>
+      <div class="err-msg" id="err-coordenador">Informe o coordenador.</div>
     </div>
-    <div class="assinatura-centro">
-      ASSINADO PELA SECRETARIA GERAL
-    </div>
-    <div class="linha-datas">
-      <div class="campo">
-        <b>SOLICITADO EM: ___/___/202__</b><br>
-        <b>POR: ____________________________</b>
-      </div>
-      <div class="campo">
-       <b> ENTREGUE EM: ___/___/202__</b><br>
-        <b>POR: ____________________________</b>
-      </div>
+
+    <div class="field-group">
+      <label class="fl">WhatsApp <span>*</span></label>
+      <input type="tel" id="fone" name="fone" class="fi" placeholder="(91) 00000-0000" required>
+      <div class="err-msg" id="err-fone">Telefone inválido.</div>
     </div>
   </div>
+
+  <!-- TABELA DE PEDIDOS -->
+  <div class="section-label">📦 Quantidades pedidas</div>
+  <div class="table-wrap">
+  <table id="tabelaPedido">
+    <thead>
+      <tr>
+        <th style="width:34%">Material</th>
+        <th style="width:14%">Preços</th>
+        <th style="text-align:center;width:10%">Aluno</th>
+        <th style="text-align:center;width:10%">Professor</th>
+        <th style="text-align:center;width:10%">Kit</th>
+        <th style="text-align:right;width:12%">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- CRIANÇAS -->
+      <tr class="sec-row"><td colspan="6">🧒 Crianças</td></tr>
+      <tr data-sec="crianca" data-pa="8" data-pp="15" data-pk="45">
+        <td class="mat">Maternal (3/4 anos)</td>
+        <td class="price">Al: R$8 · Prof: R$15<br>Kit: R$45</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="k"></td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="crianca" data-pa="8" data-pp="15" data-pk="45">
+        <td class="mat">Jardim da Infância (5/6 anos)</td>
+        <td class="price">Al: R$8 · Prof: R$15<br>Kit: R$45</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="k"></td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="crianca" data-pa="8" data-pp="15" data-pk="45">
+        <td class="mat">Primário (7/8 anos)</td>
+        <td class="price">Al: R$8 · Prof: R$15<br>Kit: R$45</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="k"></td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="crianca" data-pa="8" data-pp="15" data-pk="45">
+        <td class="mat">Juniores (9/10 anos)</td>
+        <td class="price">Al: R$8 · Prof: R$15<br>Kit: R$45</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="k"></td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+
+      <!-- ADOLESCENTES E JOVENS -->
+      <tr class="sec-row"><td colspan="6">🧑 Adolescentes e Jovens</td></tr>
+      <tr data-sec="jovem" data-pa="10" data-pp="15">
+        <td class="mat">Pré-Adolescentes (11/12)</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="jovem" data-pa="10" data-pp="15">
+        <td class="mat">Adolescentes (13/14)</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="jovem" data-pa="10" data-pp="15">
+        <td class="mat">Juvenis (15/17)</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="jovem" data-pa="10" data-pp="15">
+        <td class="mat">Jovem (normal)</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+
+      <!-- ADULTOS -->
+      <tr class="sec-row"><td colspan="6">👤 Adultos</td></tr>
+      <tr data-sec="adulto" data-pa="10" data-pp="15">
+        <td class="mat">Adultos (normal)</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="adulto" data-pa="10" data-pp="15">
+        <td class="mat">Discipulado</td>
+        <td class="price">Al: R$10 · Prof: R$15</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+
+      <!-- MATERIAIS ADICIONAIS -->
+      <tr class="sec-row" style="background:#1a4a8a"><td colspan="6">📚 Materiais Adicionais</td></tr>
+      <tr data-sec="extra" data-pu="17">
+        <td class="mat">Letra Gigante – Aluno</td>
+        <td class="price">R$ 17,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="20">
+        <td class="mat">Letra Gigante – Professor</td>
+        <td class="price">R$ 20,00</td>
+        <td class="center">—</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="30">
+        <td class="mat">Adultos Capa Dura</td>
+        <td class="price">R$ 30,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="20">
+        <td class="mat">Livro de Apoio – Jovens</td>
+        <td class="price">R$ 20,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="20">
+        <td class="mat">Livro de Apoio – Adulto</td>
+        <td class="price">R$ 20,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="15">
+        <td class="mat">Ensinador Cristão</td>
+        <td class="price">R$ 15,00</td>
+        <td class="center">—</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
+        <td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="5">
+        <td class="mat">Caderneta de Chamada</td>
+        <td class="price">R$ 5,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+      <tr data-sec="extra" data-pu="15">
+        <td class="mat">Livro de Relatório</td>
+        <td class="price">R$ 15,00</td>
+        <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
+        <td class="center">—</td><td class="center">—</td>
+        <td class="sub">R$ 0,00</td>
+      </tr>
+
+    </tbody>
+  </table>
+  </div>
+
+  <!-- TOTAL -->
+  <div class="total-bar">
+    <span class="label">💰 Total do pedido</span>
+    <span class="value" id="totalValor">R$ 0,00</span>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button type="submit" class="btn btn-enviar">
+      📤 Enviar pedido
+    </button>
+    <button type="button" class="btn btn-pdf" id="btnPdf" onclick="gerarPDF()" disabled>
+      📄 Baixar PDF
+    </button>
+    <button type="button" class="btn btn-wpp" id="btnWpp" onclick="enviarWhatsApp()" disabled>
+      💬 Enviar WhatsApp
+    </button>
+  </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div id="successScreen">
+    <div class="check-circle">✓</div>
+    <h2>Pedido enviado!</h2>
+    <p>Seu pedido foi registrado com sucesso. Use os botões abaixo para baixar o PDF ou enviar pelo WhatsApp para o responsável.</p>
+    <div class="post-actions">
+      <button class="btn btn-pdf" onclick="gerarPDF()" style="flex:unset;min-width:170px">📄 Baixar PDF</button>
+      <button class="btn btn-wpp" onclick="enviarWhatsApp()" style="flex:unset;min-width:170px">💬 Enviar WhatsApp</button>
+    </div>
+  </div>
+
+  <div class="footer">Departamento de EBD · AD Campo no Maguari · Sistema de pedidos online</div>
 </div>
 
-    </div>
-  </div>
+<script>
+/* ─── CÁLCULO ─────────────────────────── */
+document.addEventListener('input', e => {
+  if(e.target.classList.contains('qty')) calcular();
+});
 
-  
-   <div class="action-buttons">
-      <button class="btn btn-outline" onclick="resetForm()">
-        <i class="fas fa-eraser"></i> Limpar Formulário
-      </button>
-      <a href="admin.html" class="admin-link">
-    <i class="fas fa-lock"></i> Área Admin
-  </a>
-    <button  class="admin-link" onclick="salvarPedido()">Salvar Pedido</button>
-      <button class="btn btn-whatsapp" onclick="generateAndSharePDF()">
-        <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
-      </button>
-<div id="captcha-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
-  <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; width: 100%;">
-    <h3>Verificação de Segurança</h3>
-    <p>Por favor, confirme que você não é um robô:</p>
-    
-    <div style="margin: 20px 0; display: flex; align-items: center;">
-      <input type="checkbox" id="not-robot-checkbox" style="margin-right: 10px;">
-      <label for="not-robot-checkbox">Não sou um robô</label>
-    </div>
-    
-    <p id="captcha-error" style="color: red; min-height: 20px;"></p>
-    
-    <div style="display: flex; justify-content: flex-end; gap: 10px;">
-      <button id="btn-verify" disabled>Verificar</button>
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+function calcular(){
+  let total = 0;
+  document.querySelectorAll('#tabelaPedido tbody tr[data-sec]').forEach(row => {
+    const sec = row.dataset.sec;
+    const inputs = row.querySelectorAll('input.qty');
+    let sub = 0;
 
-<span class="material-icons" style="color:#4285F4; font-size:24px; margin-left:10px;">
-  cached
-</span>
+    if(sec === 'crianca'){
+      inputs.forEach(i => {
+        const v = +i.value || 0;
+        if(i.dataset.tipo === 'a') sub += v * (+row.dataset.pa);
+        if(i.dataset.tipo === 'p') sub += v * (+row.dataset.pp);
+        if(i.dataset.tipo === 'k') sub += v * (+row.dataset.pk);
+      });
+    } else if(sec === 'jovem' || sec === 'adulto'){
+      inputs.forEach(i => {
+        const v = +i.value || 0;
+        if(i.dataset.tipo === 'a') sub += v * (+row.dataset.pa);
+        if(i.dataset.tipo === 'p') sub += v * (+row.dataset.pp);
+      });
+    } else if(sec === 'extra'){
+      inputs.forEach(i => { sub += (+i.value || 0) * (+row.dataset.pu); });
+    }
 
-    </div>
-  </div>
-</div>
+    row.querySelector('.sub').textContent = 'R$ ' + sub.toFixed(2).replace('.',',');
+    total += sub;
+  });
 
+  document.getElementById('totalValor').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+}
 
-     <!-- Loading overlay -->
-  <div class="loading-overlay" id="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-  <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: #fff; padding: 20px; z-index: 9999;">
-  <p style="margin: 0; padding: 0 0 10px 0;">
-    Este site utiliza cookies para melhorar sua experiência. Ao continuar navegando, você concorda com nossa <a href="TERMO-DE-PRIVACIDADE.html" style="color: #4ecdc4;">Política de Privacidade
-  </p>
-  <button onclick="aceitarCookies()" style="margin-right: 10px; padding: 8px 16px;">Aceitar</button>
-  <button onclick="rejeitarCookies()" style="padding: 8px 16px;">Rejeitar</button>
-</div>
+/* ─── MÁSCARA TELEFONE ─────────────────── */
+document.getElementById('fone').addEventListener('input', function(){
+  let v = this.value.replace(/\D/g,'');
+  if(v.length > 11) v = v.slice(0,11);
+  if(v.length > 6) this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if(v.length > 2) this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else if(v.length > 0) this.value = `(${v}`;
+});
 
+/* ─── VALIDAÇÃO ────────────────────────── */
+function validate(){
+  let ok = true;
+  const fields = [
+    {id:'grupo',      msg:'err-grupo',      check: v => v !== ''},
+    {id:'congregacao',msg:'err-congregacao',check: v => v.trim().length >= 2},
+    {id:'coordenador',msg:'err-coordenador',check: v => v.trim().length >= 3},
+    {id:'fone',       msg:'err-fone',       check: v => v.replace(/\D/g,'').length >= 10},
+  ];
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const err = document.getElementById(f.msg);
+    if(!f.check(el.value)){
+      el.classList.add('error');
+      err.classList.add('show');
+      ok = false;
+    } else {
+      el.classList.remove('error');
+      err.classList.remove('show');
+    }
+  });
+  return ok;
+}
 
+/* ─── SUBMIT ───────────────────────────── */
+document.getElementById('formPedido').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!validate()) return;
 
- <script src="script.js"></script>
+  const btn = this.querySelector('.btn-enviar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Enviando...';
+
+  const dados = coletarDados();
+
+  fetch("https://script.google.com/macros/s/AKfycbyxjaGj_juGbYd43v9mLPGsZwKnJCGQp2NmcZ0iRCWfZUzv3MLCb8Rhn9gaMNi1n0LFKw/exec", {
+    method: 'POST',
+    body: JSON.stringify(dados)
+  })
+  .then(r => r.text())
+  .then(() => {
+    document.getElementById('formPedido').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('btnPdf').disabled = false;
+    document.getElementById('btnWpp').disabled = false;
+  })
+  .catch(() => {
+    // Mesmo com erro de rede, libera PDF e WhatsApp
+    document.getElementById('formPedido').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('btnPdf').disabled = false;
+    document.getElementById('btnWpp').disabled = false;
+  });
+});
+
+/* ─── COLETAR DADOS ────────────────────── */
+function coletarDados(){
+  const itens = [];
+  document.querySelectorAll('#tabelaPedido tbody tr[data-sec]').forEach(row => {
+    const mat = row.querySelector('.mat')?.textContent?.trim() || '';
+    const sub = row.querySelector('.sub')?.textContent?.trim() || '';
+    const qtds = [];
+    row.querySelectorAll('input.qty').forEach(i => qtds.push(+i.value||0));
+    if(qtds.some(q => q > 0)) itens.push({mat, qtds, sub});
+  });
+  return {
+    grupo: document.getElementById('grupo').value,
+    congregacao: document.getElementById('congregacao').value,
+    coordenador: document.getElementById('coordenador').value,
+    fone: document.getElementById('fone').value,
+    total: document.getElementById('totalValor').textContent,
+    data: new Date().toLocaleString('pt-BR'),
+    itens
+  };
+}
+
+/* ─── GERAR PDF ────────────────────────── */
+function gerarPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const d = coletarDados();
+
+  const navy  = [0,33,71];
+  const blue  = [43,87,151];
+  const gold  = [232,184,75];
+  const white = [255,255,255];
+  const gray  = [240,244,249];
+  const muted = [107,122,153];
+  const text  = [26,26,46];
+
+  const W = 210, margin = 14;
+
+  // Header background
+  doc.setFillColor(...navy);
+  doc.rect(0, 0, W, 36, 'F');
+
+  // Church name
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text('IGREJA EVANGÉLICA ASSEMBLEIA DE DEUS – CAMPO NO MAGUARI', W/2, 10, {align:'center'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.text('Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09', W/2, 16, {align:'center'});
+  doc.text('Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente', W/2, 21, {align:'center'});
+
+  // Title bar
+  doc.setFillColor(...blue);
+  doc.rect(0, 28, W, 10, 'F');
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text('PEDIDO DE REVISTAS – 1º TRIMESTRE 2026', W/2, 35, {align:'center'});
+
+  // Identification box
+  let y = 44;
+  doc.setFillColor(...gray);
+  doc.roundedRect(margin, y, W - margin*2, 26, 3, 3, 'F');
+
+  doc.setTextColor(...muted);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+
+  const col1 = margin + 4, col2 = W/2 + 4;
+  doc.text('GRUPO', col1, y+6);
+  doc.text('CONGREGAÇÃO', col2, y+6);
+  doc.text('COORDENADOR(A)', col1, y+17);
+  doc.text('WHATSAPP', col2, y+17);
+
+  doc.setTextColor(...text);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text(d.grupo, col1, y+12);
+  doc.text(d.congregacao, col2, y+12);
+  doc.text(d.coordenador, col1, y+23);
+  doc.text(d.fone, col2, y+23);
+
+  y += 32;
+
+  // Table header
+  const colW = [64, 28, 18, 22, 18, 28];
+  const colX = [margin];
+  colW.slice(0,-1).forEach((w,i) => colX.push(colX[i]+w));
+
+  doc.setFillColor(...navy);
+  doc.rect(margin, y, W - margin*2, 8, 'F');
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  const headers = ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'];
+  headers.forEach((h,i) => {
+    doc.text(h, colX[i]+2, y+5.5);
+  });
+  y += 8;
+
+  // Table rows
+  const allRows = document.querySelectorAll('#tabelaPedido tbody tr');
+  allRows.forEach(row => {
+    if(row.classList.contains('sec-row')){
+      doc.setFillColor(...blue);
+      doc.rect(margin, y, W - margin*2, 7, 'F');
+      doc.setTextColor(...white);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.5);
+      const secText = row.textContent.trim().replace(/[^\w\s\u00C0-\u024F]/g,'').trim();
+      doc.text(secText, W/2, y+5, {align:'center'});
+      y += 7;
+      return;
+    }
+
+    if(!row.dataset.sec) return;
+
+    const mat = row.querySelector('.mat')?.textContent?.trim() || '';
+    const price = row.querySelector('.price')?.textContent?.trim().replace(/\n/g,' ') || '';
+    const sub = row.querySelector('.sub')?.textContent?.trim() || '';
+    const inputs = row.querySelectorAll('input.qty');
+    const qtds = [];
+    inputs.forEach(inp => qtds.push(inp.value || '0'));
+
+    const colInputs = [...row.querySelectorAll('td')].slice(2,5).map(td => {
+      const inp = td.querySelector('input.qty');
+      return inp ? inp.value : '—';
+    });
+
+    // row bg
+    const isEven = (y % 8 < 4);
+    doc.setFillColor(isEven ? 250 : 245, isEven ? 251 : 247, isEven ? 253 : 251);
+    doc.rect(margin, y, W - margin*2, 7, 'F');
+
+    // border bottom
+    doc.setDrawColor(213,222,240);
+    doc.line(margin, y+7, W-margin, y+7);
+
+    doc.setTextColor(...text);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.text(mat, colX[0]+2, y+4.8);
+
+    doc.setFontSize(6.5);
+    doc.setTextColor(...muted);
+    doc.text(price.replace('·','/'), colX[1]+2, y+4.8);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...text);
+    colInputs.forEach((v,i) => {
+      doc.text(v, colX[2+i] + colW[2+i]/2, y+4.8, {align:'center'});
+    });
+
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...blue);
+    doc.text(sub, colX[5]+colW[5]-2, y+4.8, {align:'right'});
+
+    y += 7;
+
+    if(y > 265){
+      doc.addPage();
+      y = 14;
+    }
+  });
+
+  // Total bar
+  y += 4;
+  doc.setFillColor(...navy);
+  doc.roundedRect(margin, y, W - margin*2, 12, 3, 3, 'F');
+  doc.setTextColor(...gold);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text('TOTAL: ' + d.total, W - margin - 4, y+8, {align:'right'});
+  doc.setTextColor(...white);
+  doc.setFontSize(8);
+  doc.text('TOTAL DO PEDIDO', margin+4, y+8);
+
+  // Footer
+  y += 20;
+  doc.setTextColor(...muted);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.text(`Gerado em: ${d.data}  ·  Departamento de EBD · AD Campo no Maguari`, W/2, y, {align:'center'});
+
+  doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-1Tri2026.pdf`);
+}
+
+/* ─── ENVIAR WHATSAPP ──────────────────── */
+function enviarWhatsApp(){
+  const d = coletarDados();
+
+  // ALTERE AQUI o número do responsável (apenas dígitos, com DDI)
+  const numeroResponsavel = '5591999999999';
+
+  let msg = `📖 *PEDIDO DE REVISTAS – EBD 2026*\n`;
+  msg += `1º Trimestre\n\n`;
+  msg += `*Grupo:* ${d.grupo}\n`;
+  msg += `*Congregação:* ${d.congregacao}\n`;
+  msg += `*Coordenador:* ${d.coordenador}\n`;
+  msg += `*Fone:* ${d.fone}\n`;
+  msg += `*Data:* ${d.data}\n\n`;
+  msg += `📦 *Itens pedidos:*\n`;
+
+  if(d.itens.length === 0){
+    msg += `_(nenhum item com quantidade > 0)_\n`;
+  } else {
+    d.itens.forEach(item => {
+      msg += `• ${item.mat} → ${item.sub}\n`;
+    });
+  }
+
+  msg += `\n💰 *TOTAL: ${d.total}*`;
+
+  const url = `https://wa.me/${numeroResponsavel}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+</script>
 </body>
 </html>
-
