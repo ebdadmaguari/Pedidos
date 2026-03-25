@@ -6,8 +6,11 @@
 <title>Pedido de Revistas – EBD 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-:root{
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <style>
+    :root{
   --navy:#002147;
   --blue:#1a4a8a;
   --blue-mid:#2b5797;
@@ -345,19 +348,122 @@ input.qty:hover{border-color:#a0b0d0;}
   .badge-trimestre{margin-left:0;}
   .actions{flex-direction:column;}
 }
-</style>
-</head>
-<body>
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #000;
+  padding: 10px;
+}
+
+/* Logos */
+.logo-esquerda img,
+.logo-direita img {
+  width: 80px;
+  height: auto;
+}
+
+/* Centralizar texto */
+.header-text {
+  text-align: center;
+  flex: 1;
+  padding: 0 10px;
+}
+
+.header-text h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.header-text p {
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+.textarea-acrescimo {
+  width: 100%;
+  min-height: 120px;
+  max-height: 200px;
+  resize: vertical;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+/* efeito ao clicar */
+.textarea-acrescimo:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(43,87,151,.15);
+}
+
+/* placeholder mais bonito */
+.textarea-acrescimo::placeholder {
+  color: #9aa7c7;
+  font-style: italic;
+}
+/* ── ASSINATURAS ───────────────── */
+.assinaturas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin: 30px 24px;
+}
+
+.assinatura-box {
+  text-align: center;
+}
+
+.linha {
+  border-top: 2px solid #002147;
+  margin: 40px 20px 10px;
+}
+
+.nome {
+  font-size: 12px;
+  font-weight: 600;
+  color: #002147;
+}
+
+.cargo {
+  font-size: 11px;
+  color: #6b7a99;
+  margin-top: 2px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  .assinaturas {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+  </style>
 
 <!-- HEADER -->
 <div class="page-header">
-  <div class="header-logo">📖</div>
+
+  <!-- Logo esquerda -->
+  <div class="logo-esquerda">
+    <img src="logo-campo.png" alt="Logo Campo">
+  </div>
+
+  <!-- Texto central -->
   <div class="header-text">
     <h1>Igreja Evangélica Assembleia de Deus – Campo no Maguari</h1>
-    <p>Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09<br>
-       Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente</p>
+    <p>
+      Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09<br>
+      Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente
+    </p>
   </div>
-  <div class="badge-trimestre">1º Trim. 2026</div>
+
+  <!-- Logo direita -->
+  <div class="logo-direita">
+    <img src="logo-ebd.png" alt="Logo EBD">
+  </div>
+
 </div>
 
 <!-- MAIN CARD -->
@@ -570,12 +676,41 @@ input.qty:hover{border-color:#a0b0d0;}
     </tbody>
   </table>
   </div>
+  <!-- ACRÉSCIMO -->
+<div class="section-label">➕ Observações / Ajustes</div>
+
+<div class="acrescimo-box">
+  <label class="fl">Descreva o ajuste ou observação</label>
+
+  <textarea id="acrescimoObs" name="acrescimoObs" class="fi textarea-acrescimo"
+    placeholder="Digite aqui... Ex: Frete incluso, material adicional, urgência na entrega, desconto especial, etc."></textarea>
+
+  <div class="acrescimo-hint">
+    ℹ️ Esse campo é livre para observações e aparecerá no PDF.
+  </div>
+</div>
 
   <!-- TOTAL -->
   <div class="total-bar">
     <span class="label">💰 Total do pedido</span>
     <span class="value" id="totalValor">R$ 0,00</span>
   </div>
+  <!-- ASSINATURAS -->
+<div class="assinaturas">
+  
+  <div class="assinatura-box">
+    <div class="linha"></div>
+    <div class="nome" id="nomeCoordenador"></div>
+    <div class="cargo">Coordenador(a)</div>
+  </div>
+
+  <div class="assinatura-box">
+    <div class="linha"></div>
+    <div class="nome" id="nomeDirigente"></div>
+    <div class="cargo">Dirigente</div>
+  </div>
+
+</div>
 
   <!-- ACTIONS -->
   <div class="actions">
@@ -607,7 +742,7 @@ input.qty:hover{border-color:#a0b0d0;}
 </div>
 
 <script>
-/* ─── CÁLCULO ─────────────────────────── */
+  /* ─── CÁLCULO ─────────────────────────── */
 document.addEventListener('input', e => {
   if(e.target.classList.contains('qty')) calcular();
 });
@@ -747,7 +882,21 @@ function gerarPDF(){
   // Header background
   doc.setFillColor(...navy);
   doc.rect(0, 0, W, 36, 'F');
+// LOGO ESQUERDA
+const img = document.getElementById('logoEsquerda');
 
+if(img && img.complete){
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  const base64 = canvas.toDataURL('image/png');
+
+  doc.addImage(base64, 'PNG', margin, 4, 18, 18);
+}
   // Church name
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
@@ -883,7 +1032,69 @@ function gerarPDF(){
   doc.setTextColor(...white);
   doc.setFontSize(8);
   doc.text('TOTAL DO PEDIDO', margin+4, y+8);
+ // ── ACRÉSCIMO (TEXTO) ──
+if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
+  y += 5;
 
+  doc.setFillColor(232,240,250);
+  doc.roundedRect(margin, y, W - margin*2, 12, 2, 2, 'F');
+
+  doc.setDrawColor(...blue);
+  doc.roundedRect(margin, y, W - margin*2, 12, 2, 2, 'S');
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...blue);
+  doc.text('OBSERVAÇÕES:', margin+3, y+5);
+
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...text);
+
+  const linhas = doc.splitTextToSize(d.acrescimoObs, W - margin*2 - 30);
+  doc.text(linhas, margin+30, y+5);
+
+  y += 10 + (linhas.length * 3);
+}
+/* ── ASSINATURAS ── */
+y += 20;
+
+// se estiver muito embaixo, cria nova página
+if(y > 240){
+  doc.addPage();
+  y = 20;
+}
+
+const largura = (W - margin * 2) / 2;
+
+// COORDENADOR
+doc.setDrawColor(0,33,71);
+doc.setLineWidth(0.5);
+doc.line(margin + 10, y, margin + largura - 10, y);
+
+doc.setFont('helvetica','normal');
+doc.setFontSize(8);
+doc.setTextColor(26,26,46);
+
+// nome
+doc.text(d.coordenador || '', margin + largura/2, y + 6, {align:'center'});
+
+// cargo
+doc.setFontSize(7);
+doc.text('Coordenador(a)', margin + largura/2, y + 11, {align:'center'});
+
+
+// DIRIGENTE
+const x2 = margin + largura;
+
+doc.line(x2 + 10, y, x2 + largura - 10, y);
+
+// nome
+doc.setFontSize(8);
+doc.text(d.dirigente || '', x2 + largura/2, y + 6, {align:'center'});
+
+// cargo
+doc.setFontSize(7);
+doc.text('Dirigente', x2 + largura/2, y + 11, {align:'center'});
   // Footer
   y += 20;
   doc.setTextColor(...muted);
@@ -920,7 +1131,7 @@ function enviarWhatsApp(){
 
   msg += `\n💰 *TOTAL: ${d.total}*`;
 
-  const url = `https://wa.me/${numeroResponsavel}?text=${encodeURIComponent(msg)}`;
+  const url = `https://wa.me/5591980208294${numeroResponsavel}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
 }
 </script>
