@@ -447,8 +447,8 @@ input.qty:hover{border-color:#a0b0d0;}
 
   <!-- Logo esquerda -->
   <div class="logo-esquerda">
-    <img src="logo-campo.png" alt="Logo Campo">
-  </div>
+  <img id="logoEsquerda" src="logo-campo.png" alt="Logo Campo">
+</div>
 
   <!-- Texto central -->
   <div class="header-text">
@@ -460,10 +460,9 @@ input.qty:hover{border-color:#a0b0d0;}
   </div>
 
   <!-- Logo direita -->
-  <div class="logo-direita">
-    <img src="logo-ebd.png" alt="Logo EBD">
-  </div>
-
+<div class="logo-direita">
+  <img id="logoDireita" src="logo-ebd.png" alt="Logo EBD">
+</div>
 </div>
 
 <!-- MAIN CARD -->
@@ -862,7 +861,31 @@ function coletarDados(){
     itens
   };
 }
+function imgToBase64(img) {
+  return new Promise((resolve) => {
+    if (img.complete) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
 
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      resolve(canvas.toDataURL('image/png'));
+    } else {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        resolve(canvas.toDataURL('image/png'));
+      };
+    }
+  });
+}
 /* ─── GERAR PDF ────────────────────────── */
 function gerarPDF(){
   const { jsPDF } = window.jspdf;
@@ -882,14 +905,37 @@ function gerarPDF(){
   // Header background
   doc.setFillColor(...navy);
   doc.rect(0, 0, W, 36, 'F');
-// LOGO ESQUERDA (CAMPO)
-if(logo-campo){
-  doc.addImage(logo-campo, 'PNG', margin, 6, 18, 18);
+// LOGO ESQUERDA
+const imgEsquerda = document.getElementById('logoEsquerda');
+
+if (imgEsquerda && imgEsquerda.complete) {
+  const canvas = document.createElement('canvas');
+  canvas.width = imgEsquerda.naturalWidth;
+  canvas.height = imgEsquerda.naturalHeight;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(imgEsquerda, 0, 0);
+
+  const base64 = canvas.toDataURL('image/png');
+
+  doc.addImage(base64, 'PNG', margin, 4, 18, 18);
 }
 
-// LOGO DIREITA (EBD)
-if(logo-ebd){
-  doc.addImage(logo-ebd, 'PNG', W - margin - 18, 6, 18, 18);
+// LOGO DIREITA
+const imgDireita = document.getElementById('logoDireita');
+
+if (imgDireita && imgDireita.complete) {
+  const canvas = document.createElement('canvas');
+  canvas.width = imgDireita.naturalWidth;
+  canvas.height = imgDireita.naturalHeight;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(imgDireita, 0, 0);
+
+  const base64 = canvas.toDataURL('image/png');
+
+  const larguraPagina = doc.internal.pageSize.getWidth();
+  doc.addImage(base64, 'PNG', larguraPagina - margin - 18, 4, 18, 18);
 }
   // Church name
   doc.setTextColor(...white);
@@ -1048,7 +1094,9 @@ if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
   doc.text(linhas, margin+30, y+5);
 
   y += 10 + (linhas.length * 3);
-}/* ── ASSINATURAS ── */
+}
+
+/* ── ASSINATURAS ── */
 y += 20;
 
 if(y > 240){
@@ -1080,7 +1128,6 @@ doc.line(x2 + 10, y, x2 + largura - 10, y);
 
 // cargo
 doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
-
   // Footer
   y += 20;
   doc.setTextColor(...muted);
