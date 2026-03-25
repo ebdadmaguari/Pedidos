@@ -735,7 +735,7 @@ input.qty:hover{border-color:#a0b0d0;}
     <p>Seu pedido foi registrado com sucesso. Use os botões abaixo para baixar o PDF ou enviar pelo WhatsApp para o responsável.</p>
     <div class="post-actions">
       <button class="btn btn-pdf" onclick="gerarPDF()" style="flex:unset;min-width:170px">📄 Baixar PDF</button>
-      <button class="btn btn-wpp" onclick="enviarWhatsApp()" style="flex:unset;min-width:170px">💬 Enviar WhatsApp</button>
+      <!--button class="btn btn-wpp" onclick="enviarWhatsApp()" style="flex:unset;min-width:170px">💬 Enviar WhatsApp</button!-->
     </div>
   </div>
 
@@ -902,7 +902,7 @@ function gerarPDF(){
   const muted = [107,122,153];
   const text  = [26,26,46];
 
-  const W = 210, margin = 5;
+  const W = 210, margin = 2;
 
   // ── HEADER ──
   doc.setFillColor(...navy);
