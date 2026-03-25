@@ -105,8 +105,8 @@ body{
 
 /* ── SECTION LABEL ────────────── */
 .section-label{
-  font-size:10.5px;
-  font-weight:700;
+  font-size:14px;
+  font-weight:800;
   text-transform:uppercase;
   letter-spacing:.8px;
   color:var(--blue-mid);
@@ -718,9 +718,9 @@ input.qty:hover{border-color:#a0b0d0;}
     <button type="submit" class="btn btn-enviar">
       📤 Enviar pedido
     </button>
-    <button type="button" class="btn btn-pdf" id="btnPdf" onclick="gerarPDF()" disabled>
+    <!--button type="button" class="btn btn-pdf" id="btnPdf" onclick="gerarPDF()" disabled>
       📄 Baixar PDF
-    </button>
+    </button!-->
     <!--button type="button" class="btn btn-wpp" id="btnWpp" onclick="enviarWhatsApp()" disabled>
       💬 Enviar WhatsApp
     </button!-->
@@ -932,7 +932,7 @@ function gerarPDF(){
   doc.setFontSize(9);
   doc.text('IGREJA EVANGÉLICA ASSEMBLEIA DE DEUS – CAMPO NO MAGUARI', W/2, 9.5, {align:'center'});
   doc.setFont('helvetica','normal');
-  doc.setFontSize(7.5);
+  doc.setFontSize(9);
   doc.text('Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09', W/2, 15, {align:'center'});
   doc.text('Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente', W/2, 20, {align:'center'});
 
@@ -941,7 +941,7 @@ function gerarPDF(){
   doc.rect(0, 26, W, 8.5, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(10.5);
+  doc.setFontSize(12);
   doc.text('PEDIDO DE REVISTAS – 1º TRIMESTRE 2026', W/2, 32, {align:'center'});
 
   // ── IDENTIFICAÇÃO ──
@@ -977,7 +977,7 @@ function gerarPDF(){
   doc.rect(margin, y, W - margin*2, 7.5, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
+  doc.setFontSize(9);
   ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'].forEach((h,i) => {
     doc.text(h, colX[i]+2, y+5.3);
   });
@@ -992,7 +992,7 @@ function gerarPDF(){
       doc.rect(margin, y, W - margin*2, 6.5, 'F');
       doc.setTextColor(...white);
       doc.setFont('helvetica','bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(9);
       const secText = row.textContent.trim().replace(/[^\w\s\u00C0-\u024F]/g,'').trim();
       doc.text(secText, W/2, y+4.6, {align:'center'});
       y += 6.5;
