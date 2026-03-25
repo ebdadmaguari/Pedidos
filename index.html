@@ -882,20 +882,14 @@ function gerarPDF(){
   // Header background
   doc.setFillColor(...navy);
   doc.rect(0, 0, W, 36, 'F');
-// LOGO ESQUERDA
-const img = document.getElementById('logoEsquerda');
+// LOGO ESQUERDA (CAMPO)
+if(logo-campo){
+  doc.addImage(logo-campo, 'PNG', margin, 6, 18, 18);
+}
 
-if(img && img.complete){
-  const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
-
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-
-  const base64 = canvas.toDataURL('image/png');
-
-  doc.addImage(base64, 'PNG', margin, 4, 18, 18);
+// LOGO DIREITA (EBD)
+if(logo-ebd){
+  doc.addImage(logo-ebd, 'PNG', W - margin - 18, 6, 18, 18);
 }
   // Church name
   doc.setTextColor(...white);
@@ -1054,11 +1048,9 @@ if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
   doc.text(linhas, margin+30, y+5);
 
   y += 10 + (linhas.length * 3);
-}
-/* ── ASSINATURAS ── */
+}/* ── ASSINATURAS ── */
 y += 20;
 
-// se estiver muito embaixo, cria nova página
 if(y > 240){
   doc.addPage();
   y = 20;
@@ -1069,32 +1061,26 @@ const largura = (W - margin * 2) / 2;
 // COORDENADOR
 doc.setDrawColor(0,33,71);
 doc.setLineWidth(0.5);
+
+// linha
 doc.line(margin + 10, y, margin + largura - 10, y);
 
+// cargo
 doc.setFont('helvetica','normal');
 doc.setFontSize(8);
 doc.setTextColor(26,26,46);
-
-// nome
-doc.text(d.coordenador || '', margin + largura/2, y + 6, {align:'center'});
-
-// cargo
-doc.setFontSize(7);
-doc.text('Coordenador(a)', margin + largura/2, y + 11, {align:'center'});
+doc.text('Coordenador(a)', margin + largura/2, y + 6, {align:'center'});
 
 
 // DIRIGENTE
 const x2 = margin + largura;
 
+// linha
 doc.line(x2 + 10, y, x2 + largura - 10, y);
 
-// nome
-doc.setFontSize(8);
-doc.text(d.dirigente || '', x2 + largura/2, y + 6, {align:'center'});
-
 // cargo
-doc.setFontSize(7);
-doc.text('Dirigente', x2 + largura/2, y + 11, {align:'center'});
+doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
+
   // Footer
   y += 20;
   doc.setTextColor(...muted);
