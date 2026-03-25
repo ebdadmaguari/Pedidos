@@ -1097,13 +1097,19 @@ if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
   y += 10 + (linhas.length * 3);
 }
 
-/* ── ASSINATURAS ── */
-y += 20;
+//* ── ASSINATURAS ── */
 
-if(y > 240){
+// altura que vai usar (linha + texto)
+const alturaAssinatura = 15;
+
+// verifica ANTES de somar
+if (y + alturaAssinatura > 280) { // 280 = limite seguro da página
   doc.addPage();
   y = 20;
 }
+
+// agora sim soma
+y += 20;
 
 const largura = (W - margin * 2) / 2;
 
@@ -1111,23 +1117,20 @@ const largura = (W - margin * 2) / 2;
 doc.setDrawColor(0,33,71);
 doc.setLineWidth(0.5);
 
-// linha
 doc.line(margin + 10, y, margin + largura - 10, y);
 
-// cargo
 doc.setFont('helvetica','normal');
 doc.setFontSize(8);
 doc.setTextColor(26,26,46);
+
 doc.text('Coordenador(a)', margin + largura/2, y + 6, {align:'center'});
 
 
 // DIRIGENTE
 const x2 = margin + largura;
 
-// linha
 doc.line(x2 + 10, y, x2 + largura - 10, y);
 
-// cargo
 doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
   // Footer
   y += 20;
