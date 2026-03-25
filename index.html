@@ -977,7 +977,7 @@ function gerarPDF(){
   doc.rect(margin, y, W - margin*2, 7.5, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
+  doc.setFontSize(12);
   ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'].forEach((h,i) => {
     doc.text(h, colX[i]+2, y+5.3);
   });
@@ -992,7 +992,7 @@ function gerarPDF(){
       doc.rect(margin, y, W - margin*2, 6.5, 'F');
       doc.setTextColor(...white);
       doc.setFont('helvetica','bold');
-      doc.setFontSize(9);
+      doc.setFontSize(14);
       const secText = row.textContent.trim().replace(/[^\w\s\u00C0-\u024F]/g,'').trim();
       doc.text(secText, W/2, y+4.6, {align:'center'});
       y += 6.5;
