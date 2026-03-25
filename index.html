@@ -977,7 +977,7 @@ function gerarPDF(){
   doc.rect(margin, y, W - margin*2, 7.5, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'].forEach((h,i) => {
     doc.text(h, colX[i]+2, y+5.3);
   });
