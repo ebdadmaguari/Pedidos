@@ -682,15 +682,10 @@ input.qty:hover{border-color:#a0b0d0;}
     <span class="label">💰 Total do pedido</span>
     <span class="value" id="totalValor">R$ 0,00</span>
   </div>
-
+   
   <!-- ASSINATURAS -->
 <div class="assinaturas">
-  <div class="acrescimo-box">
-  <label class="fl">Descreva o ajuste ou observação</label>
-
-  <textarea id="acrescimoObs" name="acrescimoObs" class="fi textarea-acrescimo"
-    placeholder="Digite aqui... Ex: Frete incluso, material adicional, urgência na entrega, desconto especial, etc."></textarea>
-  </div><br>
+  
   <div class="assinatura-box">
     <div class="linha"></div>
     <div class="nome" id="nomeCoordenador"></div>
@@ -1067,33 +1062,37 @@ if (imgDireita && imgDireita.complete) {
   doc.setFontSize(8);
   doc.text('TOTAL DO PEDIDO', margin+4, y+8);
  // ── ACRÉSCIMO (TEXTO) ──
-if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
-  y += 5;
+const acrescimo = document.getElementById('acrescimoObs').value || '';
 
-  const linhas = doc.splitTextToSize(d.acrescimoObs, W - margin*2 - 30);
-  const alturaBox = 8 + (linhas.length * 4);
+y += 5;
 
-  doc.setFillColor(232,240,250);
-  doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'F');
+// se não tiver texto, cria pelo menos 1 linha
+const linhas = acrescimo.trim() !== '' 
+  ? doc.splitTextToSize(acrescimo, W - margin*2 - 30)
+  : [' '];
 
-  doc.setDrawColor(...blue);
-  doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'S');
+const alturaBox = 8 + (linhas.length * 4);
 
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(8);
-  doc.setTextColor(...blue);
-  doc.text('OBSERVAÇÕES:', margin+3, y+5);
+doc.setFillColor(232,240,250);
+doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'F');
 
-  doc.setFont('helvetica','normal');
-  doc.setTextColor(...text);
-  doc.text(linhas, margin+30, y+5);
+doc.setDrawColor(...blue);
+doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'S');
 
-  y += alturaBox + 5;
-}
+doc.setFont('helvetica','bold');
+doc.setFontSize(8);
+doc.setTextColor(...blue);
+doc.text('OBSERVAÇÕES:', margin+3, y+5);
+
+doc.setFont('helvetica','normal');
+doc.setTextColor(...text);
+doc.text(linhas, margin+30, y+5);
+
+y += alturaBox + 5;
 /* ── ASSINATURAS ── */
 
 // altura estimada
-const alturaAssinatura = 50;
+const alturaAssinatura = 75;
 
 // 🔥 se não couber, joga pro final da página (não cria nova)
 if (y + alturaAssinatura > 280) {
