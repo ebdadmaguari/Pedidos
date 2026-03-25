@@ -682,8 +682,20 @@ input.qty:hover{border-color:#a0b0d0;}
     <span class="label">💰 Total do pedido</span>
     <span class="value" id="totalValor">R$ 0,00</span>
   </div>
-   
-  <!-- ASSINATURAS -->
+    <!-- ACRÉSCIMO -->
+<!--div class="section-label">➕ Observações / Ajustes</div>
+
+<div class="acrescimo-box">
+  <label class="fl">Descreva o ajuste ou observação</label>
+
+  <textarea id="acrescimoObs" name="acrescimoObs" class="fi textarea-acrescimo"
+    placeholder="Digite aqui... Ex: Frete incluso, material adicional, urgência na entrega, desconto especial, etc."></textarea>
+
+  <div class="acrescimo-hint">
+    ℹ️ Esse campo é livre para observações e aparecerá no PDF.
+  </div>
+</div>
+  ASSINATURAS -->
 <div class="assinaturas">
   
   <div class="assinatura-box">
@@ -1061,43 +1073,41 @@ if (imgDireita && imgDireita.complete) {
   doc.setTextColor(...white);
   doc.setFontSize(8);
   doc.text('TOTAL DO PEDIDO', margin+4, y+8);
-// ── ACRÉSCIMO (TEXTO) ──
-const acrescimo = document.getElementById('acrescimoObs').value || '';{
+ // ── ACRÉSCIMO (ESPAÇO MANUAL) ──
+y += 8;
 
-y += 5;
+const alturaAcrescimo = 28;
 
-// se não tiver texto, cria pelo menos 1 linha
-const linhas = acrescimo.trim() !== '' 
-  ? doc.splitTextToSize(acrescimo, W - margin*2 - 30)
-  : [' '];
-
-const alturaBox = 8 + (linhas.length * 4);
-
-doc.setFillColor(232,240,250);
-doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'F');
+doc.setFillColor(248, 250, 255);
+doc.roundedRect(margin, y, W - margin * 2, alturaAcrescimo, 2, 2, 'F');
 
 doc.setDrawColor(...blue);
-doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'S');
+doc.setLineWidth(0.4);
+doc.roundedRect(margin, y, W - margin * 2, alturaAcrescimo, 2, 2, 'S');
 
-doc.setFont('helvetica','bold');
+doc.setFont('helvetica', 'bold');
 doc.setFontSize(8);
 doc.setTextColor(...blue);
-doc.text('OBSERVAÇÕES:', margin+3, y+5);
+doc.text('ACRÉSCIMOS / OBSERVAÇÕES:', margin + 3, y + 6);
 
-doc.setFont('helvetica','normal');
-doc.setTextColor(...text);
-doc.text(linhas, margin+30, y+5);
+// Linhas para escrita manual
+doc.setDrawColor(180, 190, 210);
+doc.setLineWidth(0.3);
+const linhaY = [y + 12, y + 18, y + 24];
+linhaY.forEach(ly => {
+  doc.line(margin + 3, ly, W - margin - 3, ly);
+});
 
-y += alturaBox + 5;
-}
-/* ── ASSINATURAS ── */
+y += alturaAcrescimo + 4;
+//* ── ASSINATURAS ── */
 
-// altura estimada
-const alturaAssinatura = 75;
+// altura que vai usar (linha + texto)
+const alturaAssinatura = 15;
 
-// 🔥 se não couber, joga pro final da página (não cria nova)
-if (y + alturaAssinatura > 280) {
-  y = 280 - alturaAssinatura;
+// verifica ANTES de somar
+if (y + alturaAssinatura > 280) { // 280 = limite seguro da página
+  doc.addPage();
+  y = 20;
 }
 
 // agora sim soma
@@ -1117,12 +1127,11 @@ doc.setTextColor(26,26,46);
 
 doc.text('Coordenador(a)', margin + largura/2, y + 6, {align:'center'});
 
+
 // DIRIGENTE
 const x2 = margin + largura;
 
 doc.line(x2 + 10, y, x2 + largura - 10, y);
-
-doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
 
 doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
   // Footer
