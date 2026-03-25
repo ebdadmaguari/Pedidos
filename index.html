@@ -903,242 +903,188 @@ function gerarPDF(){
 
   const W = 210, margin = 13;
 
-  // Header background
+  // ── HEADER ──
   doc.setFillColor(...navy);
-  doc.rect(0, 0, W, 36, 'F');
-// LOGO ESQUERDA
-const imgEsquerda = document.getElementById('logoEsquerda');
+  doc.rect(0, 0, W, 32, 'F');
 
-if (imgEsquerda && imgEsquerda.complete) {
-  const canvas = document.createElement('canvas');
-  canvas.width = imgEsquerda.naturalWidth;
-  canvas.height = imgEsquerda.naturalHeight;
+  const imgEsquerda = document.getElementById('logoEsquerda');
+  if (imgEsquerda && imgEsquerda.complete) {
+    const canvas = document.createElement('canvas');
+    canvas.width = imgEsquerda.naturalWidth;
+    canvas.height = imgEsquerda.naturalHeight;
+    canvas.getContext('2d').drawImage(imgEsquerda, 0, 0);
+    doc.addImage(canvas.toDataURL('image/png'), 'PNG', margin, 3, 16, 16);
+  }
 
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(imgEsquerda, 0, 0);
+  const imgDireita = document.getElementById('logoDireita');
+  if (imgDireita && imgDireita.complete) {
+    const canvas = document.createElement('canvas');
+    canvas.width = imgDireita.naturalWidth;
+    canvas.height = imgDireita.naturalHeight;
+    canvas.getContext('2d').drawImage(imgDireita, 0, 0);
+    doc.addImage(canvas.toDataURL('image/png'), 'PNG', W - margin - 16, 3, 16, 16);
+  }
 
-  const base64 = canvas.toDataURL('image/png');
-
-  doc.addImage(base64, 'PNG', margin, 4, 18, 18);
-}
-
-// LOGO DIREITA
-const imgDireita = document.getElementById('logoDireita');
-
-if (imgDireita && imgDireita.complete) {
-  const canvas = document.createElement('canvas');
-  canvas.width = imgDireita.naturalWidth;
-  canvas.height = imgDireita.naturalHeight;
-
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(imgDireita, 0, 0);
-
-  const base64 = canvas.toDataURL('image/png');
-
-  const larguraPagina = doc.internal.pageSize.getWidth();
-  doc.addImage(base64, 'PNG', larguraPagina - margin - 18, 4, 18, 18);
-}
-  // Church name
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
-  doc.text('IGREJA EVANGÉLICA ASSEMBLEIA DE DEUS – CAMPO NO MAGUARI', W/2, 10, {align:'center'});
+  doc.setFontSize(8.5);
+  doc.text('IGREJA EVANGÉLICA ASSEMBLEIA DE DEUS – CAMPO NO MAGUARI', W/2, 9, {align:'center'});
   doc.setFont('helvetica','normal');
-  doc.setFontSize(7.5);
-  doc.text('Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09', W/2, 16, {align:'center'});
-  doc.text('Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente', W/2, 21, {align:'center'});
+  doc.setFontSize(7);
+  doc.text('Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09', W/2, 14, {align:'center'});
+  doc.text('Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente', W/2, 19, {align:'center'});
 
-  // Title bar
+  // ── TITLE BAR ──
   doc.setFillColor(...blue);
-  doc.rect(0, 28, W, 10, 'F');
+  doc.rect(0, 25, W, 8, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(11);
-  doc.text('PEDIDO DE REVISTAS – 1º TRIMESTRE 2026', W/2, 35, {align:'center'});
+  doc.setFontSize(10);
+  doc.text('PEDIDO DE REVISTAS – 1º TRIMESTRE 2026', W/2, 31, {align:'center'});
 
-  // Identification box
-  let y = 44;
+  // ── IDENTIFICAÇÃO ──
+  let y = 36;
   doc.setFillColor(...gray);
-  doc.roundedRect(margin, y, W - margin*2, 26, 3, 3, 'F');
+  doc.roundedRect(margin, y, W - margin*2, 22, 2, 2, 'F');
 
   doc.setTextColor(...muted);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-
+  doc.setFontSize(6.5);
   const col1 = margin + 4, col2 = W/2 + 4;
-  doc.text('GRUPO', col1, y+6);
-  doc.text('CONGREGAÇÃO', col2, y+6);
-  doc.text('COORDENADOR(A)', col1, y+17);
-  doc.text('WHATSAPP', col2, y+17);
+  doc.text('GRUPO', col1, y+5);
+  doc.text('CONGREGAÇÃO', col2, y+5);
+  doc.text('COORDENADOR(A)', col1, y+14);
+  doc.text('WHATSAPP', col2, y+14);
 
   doc.setTextColor(...text);
   doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.text(d.grupo, col1, y+12);
-  doc.text(d.congregacao, col2, y+12);
-  doc.text(d.coordenador, col1, y+23);
-  doc.text(d.fone, col2, y+23);
+  doc.setFontSize(8.5);
+  doc.text(d.grupo, col1, y+10);
+  doc.text(d.congregacao, col2, y+10);
+  doc.text(d.coordenador, col1, y+19);
+  doc.text(d.fone, col2, y+19);
 
-  y += 32;
+  y += 25;
 
-  // Table header
+  // ── CABEÇALHO TABELA ──
   const colW = [64, 28, 18, 22, 18, 28];
   const colX = [margin];
   colW.slice(0,-1).forEach((w,i) => colX.push(colX[i]+w));
 
   doc.setFillColor(...navy);
-  doc.rect(margin, y, W - margin*2, 8, 'F');
+  doc.rect(margin, y, W - margin*2, 7, 'F');
   doc.setTextColor(...white);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-  const headers = ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'];
-  headers.forEach((h,i) => {
-    doc.text(h, colX[i]+2, y+5.5);
+  doc.setFontSize(6.5);
+  ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'].forEach((h,i) => {
+    doc.text(h, colX[i]+2, y+5);
   });
-  y += 8;
+  y += 7;
 
-  // Table rows
-  const allRows = document.querySelectorAll('#tabelaPedido tbody tr');
-  allRows.forEach(row => {
+  // ── LINHAS DA TABELA ──
+  const ROW_H = 6; // altura reduzida das linhas
+
+  document.querySelectorAll('#tabelaPedido tbody tr').forEach(row => {
     if(row.classList.contains('sec-row')){
       doc.setFillColor(...blue);
-      doc.rect(margin, y, W - margin*2, 7, 'F');
+      doc.rect(margin, y, W - margin*2, 6, 'F');
       doc.setTextColor(...white);
       doc.setFont('helvetica','bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       const secText = row.textContent.trim().replace(/[^\w\s\u00C0-\u024F]/g,'').trim();
-      doc.text(secText, W/2, y+5, {align:'center'});
-      y += 7;
+      doc.text(secText, W/2, y+4.3, {align:'center'});
+      y += 6;
       return;
     }
-
     if(!row.dataset.sec) return;
 
-    const mat = row.querySelector('.mat')?.textContent?.trim() || '';
+    const mat   = row.querySelector('.mat')?.textContent?.trim() || '';
     const price = row.querySelector('.price')?.textContent?.trim().replace(/\n/g,' ') || '';
-    const sub = row.querySelector('.sub')?.textContent?.trim() || '';
-    const inputs = row.querySelectorAll('input.qty');
-    const qtds = [];
-    inputs.forEach(inp => qtds.push(inp.value || '0'));
+    const sub   = row.querySelector('.sub')?.textContent?.trim() || '';
 
     const colInputs = [...row.querySelectorAll('td')].slice(2,5).map(td => {
       const inp = td.querySelector('input.qty');
       return inp ? inp.value : '—';
     });
 
-    // row bg
-    const isEven = (y % 8 < 4);
+    const isEven = (y % ROW_H < ROW_H/2);
     doc.setFillColor(isEven ? 250 : 245, isEven ? 251 : 247, isEven ? 253 : 251);
-    doc.rect(margin, y, W - margin*2, 7, 'F');
-
-    // border bottom
+    doc.rect(margin, y, W - margin*2, ROW_H, 'F');
     doc.setDrawColor(213,222,240);
-    doc.line(margin, y+7, W-margin, y+7);
+    doc.line(margin, y+ROW_H, W-margin, y+ROW_H);
 
     doc.setTextColor(...text);
     doc.setFont('helvetica','normal');
-    doc.setFontSize(7.5);
-    doc.text(mat, colX[0]+2, y+4.8);
+    doc.setFontSize(7);
+    doc.text(mat, colX[0]+2, y+4.2);
 
-    doc.setFontSize(6.5);
+    doc.setFontSize(6);
     doc.setTextColor(...muted);
-    doc.text(price.replace('·','/'), colX[1]+2, y+4.8);
+    doc.text(price.replace('·','/'), colX[1]+2, y+4.2);
 
-    doc.setFontSize(8);
+    doc.setFontSize(7.5);
     doc.setTextColor(...text);
     colInputs.forEach((v,i) => {
-      doc.text(v, colX[2+i] + colW[2+i]/2, y+4.8, {align:'center'});
+      doc.text(v, colX[2+i] + colW[2+i]/2, y+4.2, {align:'center'});
     });
 
     doc.setFont('helvetica','bold');
     doc.setTextColor(...blue);
-    doc.text(sub, colX[5]+colW[5]-2, y+4.8, {align:'right'});
+    doc.text(sub, colX[5]+colW[5]-2, y+4.2, {align:'right'});
 
-    y += 7;
-
-    if(y > 265){
-      doc.addPage();
-      y = 14;
-    }
+    y += ROW_H;
   });
 
-  // Total bar
-  y += 4;
+  // ── TOTAL ──
+  y += 3;
   doc.setFillColor(...navy);
-  doc.roundedRect(margin, y, W - margin*2, 12, 3, 3, 'F');
+  doc.roundedRect(margin, y, W - margin*2, 10, 2, 2, 'F');
   doc.setTextColor(...gold);
   doc.setFont('helvetica','bold');
-  doc.setFontSize(11);
-  doc.text('TOTAL: ' + d.total, W - margin - 4, y+8, {align:'right'});
+  doc.setFontSize(10);
+  doc.text('TOTAL: ' + d.total, W - margin - 4, y+7, {align:'right'});
   doc.setTextColor(...white);
-  doc.setFontSize(8);
-  doc.text('TOTAL DO PEDIDO', margin+4, y+8);
- // ── ACRÉSCIMO (ESPAÇO MANUAL) ──
-y += 8;
+  doc.setFontSize(7.5);
+  doc.text('TOTAL DO PEDIDO', margin+4, y+7);
+  y += 10;
 
-const alturaAcrescimo = 28;
+  // ── ACRÉSCIMOS (ESPAÇO MANUAL) ──
+  y += 3;
+  const alturaAcrescimo = 22;
+  doc.setFillColor(248, 250, 255);
+  doc.roundedRect(margin, y, W - margin*2, alturaAcrescimo, 2, 2, 'F');
+  doc.setDrawColor(...blue);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(margin, y, W - margin*2, alturaAcrescimo, 2, 2, 'S');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...blue);
+  doc.text('ACRÉSCIMOS / OBSERVAÇÕES:', margin + 3, y + 5.5);
+  doc.setDrawColor(180, 190, 210);
+  doc.setLineWidth(0.3);
+  [y+10, y+15, y+20].forEach(ly => {
+    doc.line(margin + 3, ly, W - margin - 3, ly);
+  });
+  y += alturaAcrescimo;
 
-doc.setFillColor(248, 250, 255);
-doc.roundedRect(margin, y, W - margin * 2, alturaAcrescimo, 2, 2, 'F');
+  // ── ASSINATURAS ──
+  y += 10;
+  const largura = (W - margin * 2) / 2;
+  doc.setDrawColor(...navy);
+  doc.setLineWidth(0.5);
+  doc.line(margin + 10, y, margin + largura - 10, y);
+  doc.line(margin + largura + 10, y, margin + largura*2 - 10, y);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...text);
+  doc.text('Coordenador(a)', margin + largura/2, y+5, {align:'center'});
+  doc.text('Dirigente', margin + largura + largura/2, y+5, {align:'center'});
 
-doc.setDrawColor(...blue);
-doc.setLineWidth(0.4);
-doc.roundedRect(margin, y, W - margin * 2, alturaAcrescimo, 2, 2, 'S');
-
-doc.setFont('helvetica', 'bold');
-doc.setFontSize(8);
-doc.setTextColor(...blue);
-doc.text('ACRÉSCIMOS / OBSERVAÇÕES:', margin + 3, y + 6);
-
-// Linhas para escrita manual
-doc.setDrawColor(180, 190, 210);
-doc.setLineWidth(0.3);
-const linhaY = [y + 12, y + 18, y + 24];
-linhaY.forEach(ly => {
-  doc.line(margin + 3, ly, W - margin - 3, ly);
-});
-
-y += alturaAcrescimo + 4;
-//* ── ASSINATURAS ── */
-
-// altura que vai usar (linha + texto)
-const alturaAssinatura = 15;
-
-// verifica ANTES de somar
-if (y + alturaAssinatura > 280) { // 280 = limite seguro da página
-  doc.addPage();
-  y = 20;
-}
-
-// agora sim soma
-y += 20;
-
-const largura = (W - margin * 2) / 2;
-
-// COORDENADOR
-doc.setDrawColor(0,33,71);
-doc.setLineWidth(0.5);
-
-doc.line(margin + 10, y, margin + largura - 10, y);
-
-doc.setFont('helvetica','normal');
-doc.setFontSize(8);
-doc.setTextColor(26,26,46);
-
-doc.text('Coordenador(a)', margin + largura/2, y + 6, {align:'center'});
-
-
-// DIRIGENTE
-const x2 = margin + largura;
-
-doc.line(x2 + 10, y, x2 + largura - 10, y);
-
-doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
-  // Footer
-  y += 20;
+  // ── FOOTER ──
+  y += 10;
   doc.setTextColor(...muted);
   doc.setFont('helvetica','normal');
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.text(`Gerado em: ${d.data}  ·  Departamento de EBD · AD Campo no Maguari`, W/2, y, {align:'center'});
 
   doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-1Tri2026.pdf`);
