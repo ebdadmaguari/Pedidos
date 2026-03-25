@@ -969,7 +969,7 @@ function gerarPDF(){
   y += 26;
 
   // ── CABEÇALHO TABELA ──
-  const colW = [64, 28, 18, 22, 18, 28];
+  const colW = [70, 32, 22, 26, 22, 32];
   const colX = [margin];
   colW.slice(0,-1).forEach((w,i) => colX.push(colX[i]+w));
 
@@ -979,7 +979,7 @@ function gerarPDF(){
   doc.setFont('helvetica','bold');
   doc.setFontSize(7);
   ['MATERIAL','PREÇOS','ALUNO','PROFESSOR','KIT','SUBTOTAL'].forEach((h,i) => {
-    doc.text(h, colX[i]+2, y+5.3);
+    doc.text(h, colX[i]+4, y+5.3);
   });
   y += 7.5;
 
