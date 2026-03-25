@@ -901,7 +901,7 @@ function gerarPDF(){
   const muted = [107,122,153];
   const text  = [26,26,46];
 
-  const W = 210, margin = 14;
+  const W = 210, margin = 13;
 
   // Header background
   doc.setFillColor(...navy);
@@ -1077,11 +1077,14 @@ if (imgDireita && imgDireita.complete) {
 if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
   y += 5;
 
+  const linhas = doc.splitTextToSize(d.acrescimoObs, W - margin*2 - 30);
+  const alturaBox = 8 + (linhas.length * 4);
+
   doc.setFillColor(232,240,250);
-  doc.roundedRect(margin, y, W - margin*2, 12, 2, 2, 'F');
+  doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'F');
 
   doc.setDrawColor(...blue);
-  doc.roundedRect(margin, y, W - margin*2, 12, 2, 2, 'S');
+  doc.roundedRect(margin, y, W - margin*2, alturaBox, 2, 2, 'S');
 
   doc.setFont('helvetica','bold');
   doc.setFontSize(8);
@@ -1090,22 +1093,18 @@ if(d.acrescimoObs && d.acrescimoObs.trim() !== ''){
 
   doc.setFont('helvetica','normal');
   doc.setTextColor(...text);
-
-  const linhas = doc.splitTextToSize(d.acrescimoObs, W - margin*2 - 30);
   doc.text(linhas, margin+30, y+5);
 
-  y += 10 + (linhas.length * 3);
+  y += alturaBox + 5;
 }
+/* ── ASSINATURAS ── */
 
-//* ── ASSINATURAS ── */
-
-// altura que vai usar (linha + texto)
+// altura estimada
 const alturaAssinatura = 15;
 
-// verifica ANTES de somar
-if (y + alturaAssinatura > 280) { // 280 = limite seguro da página
-  doc.addPage();
-  y = 20;
+// 🔥 se não couber, joga pro final da página (não cria nova)
+if (y + alturaAssinatura > 280) {
+  y = 280 - alturaAssinatura;
 }
 
 // agora sim soma
@@ -1125,11 +1124,12 @@ doc.setTextColor(26,26,46);
 
 doc.text('Coordenador(a)', margin + largura/2, y + 6, {align:'center'});
 
-
 // DIRIGENTE
 const x2 = margin + largura;
 
 doc.line(x2 + 10, y, x2 + largura - 10, y);
+
+doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
 
 doc.text('Dirigente', x2 + largura/2, y + 6, {align:'center'});
   // Footer
