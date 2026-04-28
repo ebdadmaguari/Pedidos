@@ -683,20 +683,6 @@ input.qty:hover{border-color:#a0b0d0;}
     <span class="label">💰 Total do pedido</span>
     <span class="value" id="totalValor">R$ 0,00</span>
   </div>
-    <!-- ACRÉSCIMO -->
-<!--div class="section-label">➕ Observações / Ajustes</div>
-
-<div class="acrescimo-box">
-  <label class="fl">Descreva o ajuste ou observação</label>
-
-  <textarea id="acrescimoObs" name="acrescimoObs" class="fi textarea-acrescimo"
-    placeholder="Digite aqui... Ex: Frete incluso, material adicional, urgência na entrega, desconto especial, etc."></textarea>
-
-  <div class="acrescimo-hint">
-    ℹ️ Esse campo é livre para observações e aparecerá no PDF.
-  </div>
-</div>
-  ASSINATURAS -->
 <div class="assinaturas">
   
   <div class="assinatura-box">
@@ -718,12 +704,7 @@ input.qty:hover{border-color:#a0b0d0;}
     <button type="submit" class="btn btn-enviar">
       📤 Enviar pedido
     </button>
-    <!--button type="button" class="btn btn-pdf" id="btnPdf" onclick="gerarPDF()" disabled>
-      📄 Baixar PDF
-    </button!-->
-    <!--button type="button" class="btn btn-wpp" id="btnWpp" onclick="enviarWhatsApp()" disabled>
-      💬 Enviar WhatsApp
-    </button!-->
+   
   </div>
 
   </form>
@@ -824,7 +805,7 @@ document.getElementById('formPedido').addEventListener('submit', function(e){
 
   const dados = coletarDados();
 
-  fetch("https://script.google.com/macros/s/AKfycbyxjaGj_juGbYd43v9mLPGsZwKnJCGQp2NmcZ0iRCWfZUzv3MLCb8Rhn9gaMNi1n0LFKw/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbxweq6wqoJJpMd0lVVglqyxNDsg0HqTxkNnaMl_NfVCGM0P1hhxx-tJcqkyaE01p5Hu/exec", {
     method: 'POST',
     body: JSON.stringify(dados)
   })
