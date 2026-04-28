@@ -6,7 +6,6 @@
 <title>Pedido de Revistas – EBD 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="style.css">
 </head>
 <link rel="icon" type="image/svg+xml" href="logo-ebd.png">
 <body>
@@ -37,7 +36,6 @@ body{
   padding:24px 16px 60px;
 }
 
-/* ── HEADER ──────────────────── */
 .page-header{
   max-width:900px;
   margin:0 auto 22px;
@@ -87,7 +85,6 @@ body{
   letter-spacing:.3px;
 }
 
-/* ── CARD WRAPPER ─────────────── */
 .card{
   max-width:900px;
   margin:0 auto;
@@ -103,7 +100,6 @@ body{
   to{opacity:1;transform:translateY(0)}
 }
 
-/* ── SECTION LABEL ────────────── */
 .section-label{
   font-size:16px;
   font-weight:800;
@@ -114,7 +110,6 @@ body{
   border-bottom:1.5px solid var(--blue-lite);
 }
 
-/* ── IDENTIFICATION FIELDS ─────── */
 .ident-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -166,7 +161,6 @@ select.fi{
 .err-msg{font-size:11px;color:var(--red);display:none;}
 .err-msg.show{display:block;}
 
-/* ── TABLE AREA ───────────────── */
 .table-wrap{overflow-x:auto;padding:0 24px 24px;}
 
 table{
@@ -237,7 +231,6 @@ input.qty{
 input.qty:focus{border-color:var(--blue-mid);}
 input.qty:hover{border-color:#a0b0d0;}
 
-/* ── TOTAL ────────────────────── */
 .total-bar{
   margin:0 24px 24px;
   background:linear-gradient(135deg,var(--navy),var(--blue-mid));
@@ -252,7 +245,6 @@ input.qty:hover{border-color:#a0b0d0;}
 .total-bar .label{font-size:12px;font-weight:600;opacity:.8;}
 .total-bar .value{font-family:'Lora',serif;font-size:22px;font-weight:700;color:var(--accent);}
 
-/* ── ACTIONS ──────────────────── */
 .actions{
   padding:0 24px 28px;
   display:flex;
@@ -299,7 +291,6 @@ input.qty:hover{border-color:#a0b0d0;}
   box-shadow:0 6px 20px rgba(18,140,62,.2);
 }
 
-/* ── SUCCESS SCREEN ────────────── */
 #successScreen{display:none;padding:48px 24px;text-align:center;}
 
 .check-circle{
@@ -333,7 +324,6 @@ input.qty:hover{border-color:#a0b0d0;}
   display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
 }
 
-/* ── FOOTER ───────────────────── */
 .footer{
   text-align:center;
   padding:14px;
@@ -342,7 +332,6 @@ input.qty:hover{border-color:#a0b0d0;}
   border-top:1px solid var(--border);
 }
 
-/* ── RESPONSIVE ───────────────── */
 @media(max-width:560px){
   .ident-grid{grid-template-columns:1fr;}
   .page-header{flex-wrap:wrap;}
@@ -357,14 +346,12 @@ input.qty:hover{border-color:#a0b0d0;}
   padding: 10px;
 }
 
-/* Logos */
 .logo-esquerda img,
 .logo-direita img {
   width: 80px;
   height: auto;
 }
 
-/* Centralizar texto */
 .header-text {
   text-align: center;
   flex: 1;
@@ -380,6 +367,7 @@ input.qty:hover{border-color:#a0b0d0;}
   font-size: 12px;
   margin: 5px 0 0;
 }
+
 .textarea-acrescimo {
   width: 100%;
   min-height: 120px;
@@ -394,18 +382,16 @@ input.qty:hover{border-color:#a0b0d0;}
   transition: all 0.2s ease;
 }
 
-/* efeito ao clicar */
 .textarea-acrescimo:focus {
   border-color: var(--blue-mid);
   box-shadow: 0 0 0 3px rgba(43,87,151,.15);
 }
 
-/* placeholder mais bonito */
 .textarea-acrescimo::placeholder {
   color: #9aa7c7;
   font-style: italic;
 }
-/* ── ASSINATURAS ───────────────── */
+
 .assinaturas {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -434,7 +420,6 @@ input.qty:hover{border-color:#a0b0d0;}
   margin-top: 2px;
 }
 
-/* RESPONSIVO */
 @media (max-width: 600px) {
   .assinaturas {
     grid-template-columns: 1fr;
@@ -445,13 +430,9 @@ input.qty:hover{border-color:#a0b0d0;}
 
 <!-- HEADER -->
 <div class="page-header">
-
-  <!-- Logo esquerda -->
   <div class="logo-esquerda">
-  <img id="logoEsquerda" src="logo-campo.png" alt="Logo Campo">
-</div>
-
-  <!-- Texto central -->
+    <img id="logoEsquerda" src="logo-campo.png" alt="Logo Campo">
+  </div>
   <div class="header-text">
     <h1>Igreja Evangélica Assembleia de Deus – Campo no Maguari</h1>
     <p>
@@ -459,17 +440,14 @@ input.qty:hover{border-color:#a0b0d0;}
       Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente
     </p>
   </div>
-
-  <!-- Logo direita -->
-<div class="logo-direita">
-  <img id="logoDireita" src="logo-ebd.png" alt="Logo EBD">
-</div>
+  <div class="logo-direita">
+    <img id="logoDireita" src="logo-ebd.png" alt="Logo EBD">
+  </div>
 </div>
 
 <!-- MAIN CARD -->
 <div class="card" id="mainCard">
 
-  <!-- IDENTIFICAÇÃO -->
   <div class="section-label">📋 Identificação</div>
   <form id="formPedido" novalidate>
 
@@ -524,6 +502,7 @@ input.qty:hover{border-color:#a0b0d0;}
     <tbody>
 
       <!-- CRIANÇAS -->
+      <!-- data-pa=10 (R$10 aluno), data-pp=15 (R$15 prof), data-pk=45 (R$45 kit) -->
       <tr class="sec-row"><td colspan="6">🧒 Crianças</td></tr>
       <tr data-sec="crianca" data-pa="10" data-pp="15" data-pk="45">
         <td class="mat">Maternal (3/4 anos)</td>
@@ -559,8 +538,9 @@ input.qty:hover{border-color:#a0b0d0;}
       </tr>
 
       <!-- ADOLESCENTES E JOVENS -->
+      <!-- data-pa=11.5 (R$11,50 aluno), data-pp=17 (R$17 prof) -->
       <tr class="sec-row"><td colspan="6">🧑 Adolescentes e Jovens</td></tr>
-      <tr data-sec="jovem" data-pa="11,50" data-pp="17">
+      <tr data-sec="jovem" data-pa="11.5" data-pp="17">
         <td class="mat">Pré-Adolescentes (11/12)</td>
         <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
@@ -568,7 +548,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
-      <tr data-sec="jovem" data-pa="11,50" data-pp="17">
+      <tr data-sec="jovem" data-pa="11.5" data-pp="17">
         <td class="mat">Adolescentes (13/14)</td>
         <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
@@ -576,7 +556,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
-      <tr data-sec="jovem" data-pa="11,50" data-pp="17">
+      <tr data-sec="jovem" data-pa="11.5" data-pp="17">
         <td class="mat">Juvenis (15/17)</td>
         <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
@@ -584,7 +564,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
-      <tr data-sec="jovem" data-pa="11,50" data-pp="17">
+      <tr data-sec="jovem" data-pa="11.5" data-pp="17">
         <td class="mat">Jovem (normal)</td>
         <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
@@ -594,18 +574,19 @@ input.qty:hover{border-color:#a0b0d0;}
       </tr>
 
       <!-- ADULTOS -->
+      <!-- data-pa=11.5 (R$11,50 aluno), data-pp=17 (R$17 prof) -->
       <tr class="sec-row"><td colspan="6">👤 Adultos</td></tr>
-      <tr data-sec="adulto" data-pa="11,50" data-pp="17">
+      <tr data-sec="adulto" data-pa="11.5" data-pp="17">
         <td class="mat">Adultos (normal)</td>
-        <td class="price">Al:  R$11,50 · Prof: R$17</td>
+        <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
-      <tr data-sec="adulto" data-pa="11,50" data-pp="17">
+      <tr data-sec="adulto" data-pa="11.5" data-pp="17">
         <td class="mat">Discipulado</td>
-        <td class="price">Al:  R$11,50 · Prof: R$17</td>
+        <td class="price">Al: R$11,50 · Prof: R$17</td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="a"></td>
         <td><input class="qty" type="number" min="0" value="0" data-tipo="p"></td>
         <td class="center">—</td>
@@ -614,6 +595,7 @@ input.qty:hover{border-color:#a0b0d0;}
 
       <!-- MATERIAIS ADICIONAIS -->
       <tr class="sec-row" style="background:#1a4a8a"><td colspan="6">📚 Materiais Adicionais</td></tr>
+      <!-- Letra Gigante Aluno: R$20 -->
       <tr data-sec="extra" data-pu="20">
         <td class="mat">Letra Gigante – Aluno</td>
         <td class="price">R$ 20,00</td>
@@ -621,6 +603,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td><td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Letra Gigante Professor: R$21 -->
       <tr data-sec="extra" data-pu="21">
         <td class="mat">Letra Gigante – Professor</td>
         <td class="price">R$ 21,00</td>
@@ -629,6 +612,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Adultos Capa Dura: R$33 -->
       <tr data-sec="extra" data-pu="33">
         <td class="mat">Adultos Capa Dura</td>
         <td class="price">R$ 33,00</td>
@@ -636,6 +620,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td><td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Livro de Apoio Jovens: R$20 -->
       <tr data-sec="extra" data-pu="20">
         <td class="mat">Livro de Apoio – Jovens</td>
         <td class="price">R$ 20,00</td>
@@ -643,6 +628,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td><td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Livro de Apoio Adulto: R$20 -->
       <tr data-sec="extra" data-pu="20">
         <td class="mat">Livro de Apoio – Adulto</td>
         <td class="price">R$ 20,00</td>
@@ -650,6 +636,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td><td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Ensinador Cristão: R$17 -->
       <tr data-sec="extra" data-pu="17">
         <td class="mat">Ensinador Cristão</td>
         <td class="price">R$ 17,00</td>
@@ -658,6 +645,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Caderneta de Chamada: R$7 -->
       <tr data-sec="extra" data-pu="7">
         <td class="mat">Caderneta de Chamada</td>
         <td class="price">R$ 7,00</td>
@@ -665,6 +653,7 @@ input.qty:hover{border-color:#a0b0d0;}
         <td class="center">—</td><td class="center">—</td>
         <td class="sub">R$ 0,00</td>
       </tr>
+      <!-- Livro de Relatório: R$20 -->
       <tr data-sec="extra" data-pu="20">
         <td class="mat">Livro de Relatório</td>
         <td class="price">R$ 20,00</td>
@@ -677,34 +666,30 @@ input.qty:hover{border-color:#a0b0d0;}
   </table>
   </div>
 
-
   <!-- TOTAL -->
   <div class="total-bar">
     <span class="label">💰 Total do pedido</span>
     <span class="value" id="totalValor">R$ 0,00</span>
   </div>
-<div class="assinaturas">
-  
-  <div class="assinatura-box">
-    <div class="linha"></div>
-    <div class="nome" id="nomeCoordenador"></div>
-    <div class="cargo">Coordenador(a)</div>
-  </div>
 
-  <div class="assinatura-box">
-    <div class="linha"></div>
-    <div class="nome" id="nomeDirigente"></div>
-    <div class="cargo">Dirigente</div>
+  <div class="assinaturas">
+    <div class="assinatura-box">
+      <div class="linha"></div>
+      <div class="nome" id="nomeCoordenador"></div>
+      <div class="cargo">Coordenador(a)</div>
+    </div>
+    <div class="assinatura-box">
+      <div class="linha"></div>
+      <div class="nome" id="nomeDirigente"></div>
+      <div class="cargo">Dirigente</div>
+    </div>
   </div>
-
-</div>
 
   <!-- ACTIONS -->
   <div class="actions">
     <button type="submit" class="btn btn-enviar">
       📤 Enviar pedido
     </button>
-   
   </div>
 
   </form>
@@ -713,11 +698,9 @@ input.qty:hover{border-color:#a0b0d0;}
   <div id="successScreen">
     <div class="check-circle">✓</div>
     <h2>Pedido Gerado!</h2>
-    <p>Seu pedido foi gerado com sucesso. Solicitamos que compareça à sala da EBD para a coleta das assinaturas do coordenador e do dirigente. Sem as assinaturas, não será possível prosseguir com o seu pedido.
-</p>
+    <p>Seu pedido foi gerado com sucesso. Solicitamos que compareça à sala da EBD para a coleta das assinaturas do coordenador e do dirigente. Sem as assinaturas, não será possível prosseguir com o seu pedido.</p>
     <div class="post-actions">
       <button class="btn btn-pdf" onclick="gerarPDF()" style="flex:unset;min-width:170px">📄 Baixar PDF</button>
-      <!--button class="btn btn-wpp" onclick="enviarWhatsApp()" style="flex:unset;min-width:170px">💬 Enviar WhatsApp</button!-->
     </div>
   </div>
 
@@ -725,7 +708,7 @@ input.qty:hover{border-color:#a0b0d0;}
 </div>
 
 <script>
-  /* ─── CÁLCULO ─────────────────────────── */
+/* ─── CÁLCULO ─────────────────────────── */
 document.addEventListener('input', e => {
   if(e.target.classList.contains('qty')) calcular();
 });
@@ -740,18 +723,18 @@ function calcular(){
     if(sec === 'crianca'){
       inputs.forEach(i => {
         const v = +i.value || 0;
-        if(i.dataset.tipo === 'a') sub += v * (+row.dataset.pa);
-        if(i.dataset.tipo === 'p') sub += v * (+row.dataset.pp);
-        if(i.dataset.tipo === 'k') sub += v * (+row.dataset.pk);
+        if(i.dataset.tipo === 'a') sub += v * parseFloat(row.dataset.pa);
+        if(i.dataset.tipo === 'p') sub += v * parseFloat(row.dataset.pp);
+        if(i.dataset.tipo === 'k') sub += v * parseFloat(row.dataset.pk);
       });
     } else if(sec === 'jovem' || sec === 'adulto'){
       inputs.forEach(i => {
         const v = +i.value || 0;
-        if(i.dataset.tipo === 'a') sub += v * (+row.dataset.pa);
-        if(i.dataset.tipo === 'p') sub += v * (+row.dataset.pp);
+        if(i.dataset.tipo === 'a') sub += v * parseFloat(row.dataset.pa);
+        if(i.dataset.tipo === 'p') sub += v * parseFloat(row.dataset.pp);
       });
     } else if(sec === 'extra'){
-      inputs.forEach(i => { sub += (+i.value || 0) * (+row.dataset.pu); });
+      inputs.forEach(i => { sub += (+i.value || 0) * parseFloat(row.dataset.pu); });
     }
 
     row.querySelector('.sub').textContent = 'R$ ' + sub.toFixed(2).replace('.',',');
@@ -813,15 +796,10 @@ document.getElementById('formPedido').addEventListener('submit', function(e){
   .then(() => {
     document.getElementById('formPedido').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
-    document.getElementById('btnPdf').disabled = false;
-    document.getElementById('btnWpp').disabled = false;
   })
   .catch(() => {
-    // Mesmo com erro de rede, libera PDF e WhatsApp
     document.getElementById('formPedido').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
-    document.getElementById('btnPdf').disabled = false;
-    document.getElementById('btnWpp').disabled = false;
   });
 });
 
@@ -845,31 +823,7 @@ function coletarDados(){
     itens
   };
 }
-function imgToBase64(img) {
-  return new Promise((resolve) => {
-    if (img.complete) {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
 
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-
-      resolve(canvas.toDataURL('image/png'));
-    } else {
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-
-        resolve(canvas.toDataURL('image/png'));
-      };
-    }
-  });
-}
 /* ─── GERAR PDF ────────────────────────── */
 function gerarPDF(){
   const { jsPDF } = window.jspdf;
@@ -886,7 +840,6 @@ function gerarPDF(){
 
   const W = 210, margin = 2;
 
-  // ── HEADER ──
   doc.setFillColor(...navy);
   doc.rect(0, 0, W, 33, 'F');
 
@@ -917,7 +870,6 @@ function gerarPDF(){
   doc.text('Departamento da Escola Bíblica Dominical · CNPJ: 15.296.627/0001-09', W/2, 15, {align:'center'});
   doc.text('Av. Cláudio Sanders, Nº 02, Maguari – Ananindeua/PA · Pr. Wilton Marques Vicente', W/2, 20, {align:'center'});
 
-  // ── TITLE BAR ──
   doc.setFillColor(...blue);
   doc.rect(0, 26, W, 8.5, 'F');
   doc.setTextColor(...white);
@@ -925,7 +877,6 @@ function gerarPDF(){
   doc.setFontSize(12);
   doc.text('PEDIDO DE REVISTAS – 1º TRIMESTRE 2026', W/2, 32, {align:'center'});
 
-  // ── IDENTIFICAÇÃO ──
   let y = 38;
   doc.setFillColor(...gray);
   doc.roundedRect(margin, y, W - margin*2, 23, 2, 2, 'F');
@@ -949,7 +900,6 @@ function gerarPDF(){
 
   y += 26;
 
-  // ── CABEÇALHO TABELA ──
   const colW = [70, 32, 22, 26, 22, 32];
   const colX = [margin];
   colW.slice(0,-1).forEach((w,i) => colX.push(colX[i]+w));
@@ -964,7 +914,6 @@ function gerarPDF(){
   });
   y += 7.5;
 
-  // ── LINHAS DA TABELA ──
   const ROW_H = 6.5;
 
   document.querySelectorAll('#tabelaPedido tbody tr').forEach(row => {
@@ -1018,7 +967,6 @@ function gerarPDF(){
     y += ROW_H;
   });
 
-  // ── TOTAL ──
   y += 3;
   doc.setFillColor(...navy);
   doc.roundedRect(margin, y, W - margin*2, 11, 2, 2, 'F');
@@ -1031,7 +979,6 @@ function gerarPDF(){
   doc.text('TOTAL DO PEDIDO', margin+4, y+7.5);
   y += 11;
 
-  // ── ACRÉSCIMOS (ESPAÇO MANUAL) ──
   y += 3;
   const alturaAcrescimo = 24;
   doc.setFillColor(248, 250, 255);
@@ -1050,7 +997,6 @@ function gerarPDF(){
   });
   y += alturaAcrescimo;
 
-  // ── ASSINATURAS ──
   y += 11;
   const largura = (W - margin * 2) / 2;
   doc.setDrawColor(...navy);
@@ -1063,25 +1009,22 @@ function gerarPDF(){
   doc.text('Coordenador(a)', margin + largura/2, y+5.5, {align:'center'});
   doc.text('Dirigente', margin + largura + largura/2, y+5.5, {align:'center'});
 
-  // ── FOOTER ──
   y += 12;
   doc.setTextColor(...muted);
   doc.setFont('helvetica','normal');
   doc.setFontSize(7);
   doc.text(`Gerado em: ${d.data}  ·  Departamento de EBD · AD Campo no Maguari`, W/2, y, {align:'center'});
 
-  doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-3Tri2026.pdf`);
+  doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-1Tri2026.pdf`);
 }
 
 /* ─── ENVIAR WHATSAPP ──────────────────── */
 function enviarWhatsApp(){
   const d = coletarDados();
-
-  // ALTERE AQUI o número do responsável (apenas dígitos, com DDI)
   const numeroResponsavel = '5591999999999';
 
   let msg = `📖 *PEDIDO DE REVISTAS – EBD 2026*\n`;
-  msg += `3º Trimestre\n\n`;
+  msg += `1º Trimestre\n\n`;
   msg += `*Grupo:* ${d.grupo}\n`;
   msg += `*Congregação:* ${d.congregacao}\n`;
   msg += `*Coordenador:* ${d.coordenador}\n`;
@@ -1099,7 +1042,7 @@ function enviarWhatsApp(){
 
   msg += `\n💰 *TOTAL: ${d.total}*`;
 
-  const url = `https://wa.me/5591980208294${numeroResponsavel}?text=${encodeURIComponent(msg)}`;
+  const url = `https://wa.me/${numeroResponsavel}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
 }
 </script>
