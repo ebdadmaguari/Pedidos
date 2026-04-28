@@ -805,7 +805,7 @@ document.getElementById('formPedido').addEventListener('submit', function(e){
 
   const dados = coletarDados();
 
-  fetch("https://script.google.com/macros/s/AKfycbxweq6wqoJJpMd0lVVglqyxNDsg0HqTxkNnaMl_NfVCGM0P1hhxx-tJcqkyaE01p5Hu/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyUiP39FsoJf_LDTkIZ3ed-zuptHQyMByfRXGQtKFnGbePA52Fac0nQGys01iX-l7TT/exec", {
     method: 'POST',
     body: JSON.stringify(dados)
   })
@@ -1070,7 +1070,7 @@ function gerarPDF(){
   doc.setFontSize(7);
   doc.text(`Gerado em: ${d.data}  ·  Departamento de EBD · AD Campo no Maguari`, W/2, y, {align:'center'});
 
-  doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-1Tri2026.pdf`);
+  doc.save(`Pedido-EBD-${d.grupo.replace(' ','-')}-3Tri2026.pdf`);
 }
 
 /* ─── ENVIAR WHATSAPP ──────────────────── */
@@ -1081,7 +1081,7 @@ function enviarWhatsApp(){
   const numeroResponsavel = '5591999999999';
 
   let msg = `📖 *PEDIDO DE REVISTAS – EBD 2026*\n`;
-  msg += `1º Trimestre\n\n`;
+  msg += `3º Trimestre\n\n`;
   msg += `*Grupo:* ${d.grupo}\n`;
   msg += `*Congregação:* ${d.congregacao}\n`;
   msg += `*Coordenador:* ${d.coordenador}\n`;
